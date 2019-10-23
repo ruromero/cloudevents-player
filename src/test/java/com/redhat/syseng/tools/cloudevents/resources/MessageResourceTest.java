@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 
 @QuarkusTest
-public class GreetingResourceTest {
+public class MessageResourceTest {
 
     @Test
-    public void testHelloEndpoint() {
+    public void getAll() {
         given()
           .when().get("/messages")
           .then()
