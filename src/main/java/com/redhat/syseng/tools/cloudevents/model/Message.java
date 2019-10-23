@@ -8,15 +8,20 @@ import io.cloudevents.v03.CloudEventImpl;
 
 public class Message {
 
+    public enum MessageType {
+        SENT,
+        RECEIVED
+    }
+
     private String id;
     private LocalDateTime receivedAt;
-    private LocalDateTime updatedAt;
     private CloudEventImpl<JsonObject> event;
-    private Boolean acknowledged;
+    private MessageType type;
 
-    public Message(CloudEventImpl<JsonObject> event) {
+    public Message(CloudEventImpl<JsonObject> event, MessageType type) {
         this.receivedAt = LocalDateTime.now();
         this.event = event;
+        this.type = type;
         this.id = event.getAttributes().getId();
     }
 
@@ -29,22 +34,8 @@ public class Message {
         return id;
     }
 
-    public Message setReceivedAt(LocalDateTime receivedAt) {
-        this.receivedAt = receivedAt;
-        return this;
-    }
-
     public LocalDateTime getReceivedAt() {
         return receivedAt;
-    }
-
-    public Message setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public Message setEvent(CloudEventImpl<JsonObject> event) {
@@ -56,7 +47,7 @@ public class Message {
         return event;
     }
 
-    public void setAcknowledge() {
-        this.acknowledged = true;
+    public MessageType getType() {
+        return type;
     }
 }

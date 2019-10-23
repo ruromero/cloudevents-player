@@ -24,16 +24,16 @@ import io.cloudevents.v03.CloudEventImpl;
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageReceiverResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReceiverResource.class);
 
     @Inject
     MessageService msgService;
 
     @POST
-    public CompletionStage<Response> hello(CloudEventImpl<JsonObject> object) {
+    public CompletionStage<Response> receive(CloudEventImpl<JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
-            LOGGER.info("Received: {}, {}, {}", object.getAttributes().getId(), object.getAttributes().getType(), object.getAttributes().getSource());
-            msgService.add(object);
+            LOGGER.debug("Received event: {}", object.getAttributes().getId());
+            msgService.receive(object);
             return Response.accepted().build();
         });
     }

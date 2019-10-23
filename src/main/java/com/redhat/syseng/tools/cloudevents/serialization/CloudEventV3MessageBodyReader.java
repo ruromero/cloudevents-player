@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -19,7 +19,7 @@ import io.cloudevents.v03.CloudEventBuilder;
 import io.cloudevents.v03.CloudEventImpl;
 
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CloudEventV3MessageBodyReader implements MessageBodyReader<CloudEventImpl<JsonObject>>,
                                                       CloudEventV3Serializable {
 
@@ -37,7 +37,7 @@ public class CloudEventV3MessageBodyReader implements MessageBodyReader<CloudEve
         return event;
     }
 
-    private CloudEventBuilder setEventValue(String header, List<String> values, CloudEventBuilder builder) {
+    private CloudEventBuilder<JsonObject> setEventValue(String header, List<String> values, CloudEventBuilder<JsonObject> builder) {
         header = header.toLowerCase();
         if (values == null || values.size() != 1) {
             return builder;

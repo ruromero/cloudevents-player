@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnOpen;
@@ -14,12 +13,14 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
-import io.cloudevents.v03.CloudEventImpl;
-import io.vertx.core.Vertx;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ServerEndpoint("/messages")
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
+
+@ServerEndpoint("/socket")
 @ApplicationScoped
 public class MessagesSocket {
 
@@ -29,25 +30,25 @@ public class MessagesSocket {
     final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
     @Inject
-    Vertx vertx;
+    EventBus eventBus;
 
     @Inject
     MessageService msgService;
 
-    @PostConstruct
-    public void onInit() {
-        vertx.eventBus().consumer(MESSAGES_ADDRESS, msg -> {
-            broadcast(msgService.get((String) msg.body()));
-        });
+    @ConsumeEvent(MESSAGES_ADDRESS)
+    public void onNewMessage(String message) {
+        broadcast(message);
     }
 
     @OnOpen
     public void onOpen(Session session) {
+        LOGGER.debug("New session: {}", session.getId());
         sessions.put(session.getId(), session);
     }
 
     @OnClose
     public void onClose(Session session) {
+        LOGGER.debug("Closed session: {}", session.getId());
         sessions.remove(session.getId());
     }
 
@@ -57,9 +58,9 @@ public class MessagesSocket {
         sessions.remove(session.getId());
     }
 
-    private void broadcast(CloudEventImpl<JsonObject> message) {
+    private void broadcast(String msg) {
         sessions.values().forEach(s -> {
-            s.getAsyncRemote().sendObject(message.getAttributes().getId(), result -> {
+            s.getAsyncRemote().sendObject(msg, result -> {
                 if (result.getException() != null) {
                     LOGGER.error("Unable to broadcast message", result.getException());
                 }
