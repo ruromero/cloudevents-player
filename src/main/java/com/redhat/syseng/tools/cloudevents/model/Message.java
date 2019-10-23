@@ -1,6 +1,6 @@
 package com.redhat.syseng.tools.cloudevents.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.json.JsonObject;
 
@@ -14,12 +14,12 @@ public class Message {
     }
 
     private String id;
-    private LocalDateTime receivedAt;
+    private ZonedDateTime receivedAt;
     private CloudEventImpl<JsonObject> event;
     private MessageType type;
 
     public Message(CloudEventImpl<JsonObject> event, MessageType type) {
-        this.receivedAt = LocalDateTime.now();
+        this.receivedAt = ZonedDateTime.now();
         this.event = event;
         this.type = type;
         this.id = event.getAttributes().getId();
@@ -34,7 +34,7 @@ public class Message {
         return id;
     }
 
-    public LocalDateTime getReceivedAt() {
+    public ZonedDateTime getReceivedAt() {
         return receivedAt;
     }
 

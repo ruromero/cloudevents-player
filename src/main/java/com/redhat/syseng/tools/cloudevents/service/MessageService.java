@@ -13,6 +13,9 @@ import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
 import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
 import io.cloudevents.v03.CloudEventImpl;
 import io.vertx.core.eventbus.EventBus;
 
@@ -25,8 +28,16 @@ public class MessageService {
     @Inject
     EventBus eventBus;
 
+    @ConfigProperty(name = "broker.url", defaultValue = "default-broker.default.svc.cluster.local")
+    String brokerUrl;
+
+    @Inject
+    @RestClient
+    BrokerService brokerService;
+
     public void send(CloudEventImpl<JsonObject> event) {
         newEvent(event, MessageType.SENT);
+        brokerService.sendEvent(event);
     }
 
     public void receive(CloudEventImpl<JsonObject> event) {
