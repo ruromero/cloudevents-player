@@ -5,7 +5,6 @@ metadata:
 data:
   application.properties: |
     brokerUrl/mp-rest/url=http://default-broker.default.svc.cluster.local
-    quarkus.log.level=DEBUG
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: Service

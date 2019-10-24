@@ -16,7 +16,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ruromero/cloudevents-player-jdk8:latest
+            image: ruromero/cloudevents-player:latest
             volumeMounts:
               - name: configuration
                 mountPath: /work/config
