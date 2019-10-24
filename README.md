@@ -138,7 +138,7 @@ data:
 Use [deploy.yaml](./src/main/knative/deploy.yaml) to create the resources
 
 ```shell script
-$ kubectl apply -n myproject -f src/main/knative/deploy.yaml
+$ kubectl apply -n myproject -f src/main/knative/deploy_native.yaml
 configmap/cloudevents-player created
 service.serving.knative.dev/cloudevents-player created
 trigger.eventing.knative.dev/cloudevents-player created
@@ -150,40 +150,3 @@ The following resources are created:
 * KNative Service: Pointing to the image and mounting the volume from the configMap
 * Trigger: To subscribe to any message in the broker
 
-### Known issues
-
-Currently the native version doesn't work. When sending a new event or receiving it the following error
-is shown:
-
-```shell script
-$ curl -v http://localhost:8080 \
-   -H "Content-Type: application/json" \
-   -H "Ce-Id: foo-1" \
-  -H "Ce-Specversion: 0.3" \
-  -H "Ce-Type: dev.example.events" \
-  -H "Ce-Source: curl-source" \
-  -d '{"msg":"Hello team!"}'
-*   Trying ::1:8080...
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> POST / HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.65.3
-> Accept: */*
-> Content-Type: application/json
-> Ce-Id: say-hello
-> Ce-Specversion: 0.3
-> Ce-Type: dev.ruben.events
-> Ce-Source: ruben-source
-> Content-Length: 21
-> 
-* upload completely sent off: 21 out of 21 bytes
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 500 Internal Server Error
-< Content-Type: text/plain;charset=UTF-8
-< validation-exception: true
-< Content-Length: 192
-< 
-* Connection #0 to host localhost left intact
-javax.validation.NoProviderFoundException: Unable to create a Configuration, because no Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.%
-```
