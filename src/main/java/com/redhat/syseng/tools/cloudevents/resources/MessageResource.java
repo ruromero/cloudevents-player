@@ -1,11 +1,14 @@
 package com.redhat.syseng.tools.cloudevents.resources;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 import javax.json.JsonObject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -35,6 +38,9 @@ public class MessageResource {
     @Inject
     MessageService msgService;
 
+    @Inject
+    Validator validator;
+
     @GET
     public CompletionStage<List<Message>> list(@QueryParam("page") @DefaultValue("0") Integer page,
             @QueryParam("size") @DefaultValue("10") Integer size) {
@@ -44,6 +50,10 @@ public class MessageResource {
     @POST
     public CompletionStage<Response> sendEvent(CloudEventImpl<JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
+            Set<ConstraintViolation<CloudEventImpl<JsonObject>>> violations = validator.validate(object);
+            if(!violations.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
+            }
             LOGGER.debug("New event to send: {} - {}", object.getAttributes().getId(), object.getData().get());
             msgService.send(object);
             return Response.accepted().build();

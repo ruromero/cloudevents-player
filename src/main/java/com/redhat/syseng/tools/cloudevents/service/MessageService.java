@@ -12,12 +12,9 @@ import javax.json.JsonObject;
 import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
 import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-
 import io.cloudevents.v03.CloudEventImpl;
 import io.vertx.core.eventbus.EventBus;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 public class MessageService {
@@ -27,9 +24,6 @@ public class MessageService {
 
     @Inject
     EventBus eventBus;
-
-    @ConfigProperty(name = "broker.url", defaultValue = "default-broker.default.svc.cluster.local")
-    String brokerUrl;
 
     @Inject
     @RestClient
@@ -48,14 +42,14 @@ public class MessageService {
         messages.add(new Message(event, type));
         if (messages.size() > MAX_SIZE) {
             messages.stream().sorted(Comparator.comparing(Message::getReceivedAt)).limit(messages.size() - MAX_SIZE)
-                    .forEach(m -> messages.remove(m));
+                .forEach(m -> messages.remove(m));
         }
         eventBus.publish(MessagesSocket.MESSAGES_ADDRESS, event.getAttributes().getId());
     }
 
     public List<Message> list(int page, int size) {
         return messages.stream().sorted(Comparator.comparing(Message::getReceivedAt).reversed()).skip(page * size)
-                .limit(page * size + size).collect(Collectors.toList());
+            .limit(page * size + size).collect(Collectors.toList());
     }
 
     public void clear() {

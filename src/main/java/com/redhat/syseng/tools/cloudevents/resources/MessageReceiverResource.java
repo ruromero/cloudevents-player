@@ -1,10 +1,13 @@
 package com.redhat.syseng.tools.cloudevents.resources;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 import javax.json.JsonObject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,10 +32,17 @@ public class MessageReceiverResource {
     @Inject
     MessageService msgService;
 
+    @Inject
+    Validator validator;
+
     @POST
     public CompletionStage<Response> receive(CloudEventImpl<JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
             LOGGER.debug("Received event: {}", object.getAttributes().getId());
+            Set<ConstraintViolation<CloudEventImpl<JsonObject>>> violations = validator.validate(object);
+            if(!violations.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
+            }
             msgService.receive(object);
             return Response.accepted().build();
         });
