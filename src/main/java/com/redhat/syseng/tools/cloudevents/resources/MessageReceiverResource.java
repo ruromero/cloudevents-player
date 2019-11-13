@@ -16,11 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
-
+import io.cloudevents.CloudEvent;
+import io.cloudevents.v1.AttributesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.cloudevents.v03.CloudEventImpl;
 
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -36,11 +35,11 @@ public class MessageReceiverResource {
     Validator validator;
 
     @POST
-    public CompletionStage<Response> receive(CloudEventImpl<JsonObject> object) {
+    public CompletionStage<Response> receive(CloudEvent<AttributesImpl, JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
             LOGGER.debug("Received event: {}", object.getAttributes().getId());
-            Set<ConstraintViolation<CloudEventImpl<JsonObject>>> violations = validator.validate(object);
-            if(!violations.isEmpty()) {
+            Set<ConstraintViolation<CloudEvent<AttributesImpl, JsonObject>>> violations = validator.validate(object);
+            if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }
             msgService.receive(object);

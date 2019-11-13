@@ -125,7 +125,7 @@ function SendEvent() {
           "ce-id": values.id,
           "ce-type": values.type,
           "ce-source": values.source,
-          "ce-specversion": "0.3"
+          "ce-specversion": "1.0"
         },
         body: values.message
       });
@@ -328,10 +328,10 @@ function Activity() {
                   {message.id}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {message.event.type}
+                  {message.event.attributes.type}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {message.event.source}
+                  {message.event.attributes.source}
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <EventTypeIcon type={message.type} />
