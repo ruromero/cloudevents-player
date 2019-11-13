@@ -22,11 +22,10 @@ import javax.ws.rs.core.Response;
 
 import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
-
+import io.cloudevents.CloudEvent;
+import io.cloudevents.v1.AttributesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.cloudevents.v03.CloudEventImpl;
 
 @Path("/messages")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -43,15 +42,15 @@ public class MessageResource {
 
     @GET
     public CompletionStage<List<Message>> list(@QueryParam("page") @DefaultValue("0") Integer page,
-            @QueryParam("size") @DefaultValue("10") Integer size) {
+                                               @QueryParam("size") @DefaultValue("10") Integer size) {
         return CompletableFuture.supplyAsync(() -> msgService.list(page, size));
     }
 
     @POST
-    public CompletionStage<Response> sendEvent(CloudEventImpl<JsonObject> object) {
+    public CompletionStage<Response> sendEvent(CloudEvent<AttributesImpl, JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
-            Set<ConstraintViolation<CloudEventImpl<JsonObject>>> violations = validator.validate(object);
-            if(!violations.isEmpty()) {
+            Set<ConstraintViolation<CloudEvent<AttributesImpl, JsonObject>>> violations = validator.validate(object);
+            if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }
             LOGGER.debug("New event to send: {} - {}", object.getAttributes().getId(), object.getData().get());

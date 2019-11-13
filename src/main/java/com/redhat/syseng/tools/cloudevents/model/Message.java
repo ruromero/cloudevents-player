@@ -4,7 +4,9 @@ import java.time.ZonedDateTime;
 
 import javax.json.JsonObject;
 
-import io.cloudevents.v03.CloudEventImpl;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.v1.AttributesImpl;
+import io.cloudevents.v1.CloudEventImpl;
 
 public class Message {
 
@@ -18,9 +20,9 @@ public class Message {
     private CloudEventImpl<JsonObject> event;
     private MessageType type;
 
-    public Message(CloudEventImpl<JsonObject> event, MessageType type) {
+    public Message(CloudEvent<AttributesImpl, JsonObject> event, MessageType type) {
         this.receivedAt = ZonedDateTime.now();
-        this.event = event;
+        this.event = (CloudEventImpl<JsonObject>) event;
         this.type = type;
         this.id = event.getAttributes().getId();
     }
@@ -38,12 +40,12 @@ public class Message {
         return receivedAt;
     }
 
-    public Message setEvent(CloudEventImpl<JsonObject> event) {
-        this.event = event;
+    public Message setEvent(CloudEvent<AttributesImpl, JsonObject> event) {
+        this.event = (CloudEventImpl<JsonObject>) event;
         return this;
     }
 
-    public CloudEventImpl<JsonObject> getEvent() {
+    public CloudEvent<AttributesImpl, JsonObject> getEvent() {
         return event;
     }
 
