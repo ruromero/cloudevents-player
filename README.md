@@ -1,6 +1,6 @@
 # CloudEvents Player
 
-It is an application that can send and receive CloudEvents v3. Its purpose is to be deployed on a 
+It is an application that can send and receive CloudEvents v1. Its purpose is to be deployed on a 
 KNative Eventing environment so that users can monitor received events in the Activity section and
 also send events of the desired type to see if it is being forwarded back to the application through
 the broker.
