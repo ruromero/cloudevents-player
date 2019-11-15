@@ -4,7 +4,7 @@ metadata:
   name: cloudevents-player
 data:
   application.properties: |
-    brokerUrl/mp-rest/url=default-broker.default.svc.cluster.local
+    com.redhat.syseng.tools.cloudevents.service.BrokerService/mp-rest/url=http://default-broker
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: Service
