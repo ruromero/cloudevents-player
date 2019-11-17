@@ -1,6 +1,6 @@
 # CloudEvents Player
 
-It is an application that can send and receive CloudEvents v1. Its purpose is to be deployed on a 
+It is an application that can send and receive CloudEvents v1. Its purpose is to be deployed on a
 KNative Eventing environment so that users can monitor received events in the Activity section and
 also send events of the desired type to see if it is being forwarded back to the application through
 the broker.
@@ -24,7 +24,7 @@ Run
 $ java -jar target/cloudevent-player-1.0-SNAPSHOT-runner.jar
 ...
 2019-10-24 11:06:33,880 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 1.875s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:06:33,881 INFO  [io.quarkus] (main) Profile prod activated. 
+2019-10-24 11:06:33,881 INFO  [io.quarkus] (main) Profile prod activated.
 2019-10-24 11:06:33,882 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
 ```
 
@@ -54,13 +54,13 @@ Run
 $ ./target/cloudevent-player-1.0-SNAPSHOT-runner
 ...
 2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 0.048s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) Profile prod activated. 
+2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) Profile prod activated.
 2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
 ```
 
 ## Use the application locally
 
-By default, the application will send events to itself to ensure that both send/receive 
+By default, the application will send events to itself to ensure that both send/receive
 work well and send valid CloudEvents.
 
 If needed, the broker endpoint can be configured in the application.properties file.
@@ -79,7 +79,7 @@ You can also simulate the broker with the `curl`:
 $ curl -v http://localhost:8080 \
    -H "Content-Type: application/json" \
    -H "Ce-Id: foo-1" \
-  -H "Ce-Specversion: 0.3" \
+  -H "Ce-Specversion: 1.0" \
   -H "Ce-Type: dev.example.events" \
   -H "Ce-Source: curl-source" \
   -d '{"msg":"Hello team!"}'
@@ -89,12 +89,12 @@ $ curl -v http://localhost:8080 \
 > Host: localhost:8080
 > Accept: */*
 > Ce-Id: foo-1
-> Ce-Specversion: 0.3
+> Ce-Specversion: 1.0
 > Ce-Type: dev.example.events
 > Ce-Source: curl-source
 > Content-Type: application/json
 > Content-Length: 21
-> 
+>
 < HTTP/1.1 202 Accepted
 < Content-Length: 0
 < Date: Thu, 24 Oct 2019 08:27:06 GMT
@@ -111,7 +111,7 @@ docker build -t ruromero/cloudevents-player-jdk8:latest -f src/main/docker/Docke
 ### Native version
 
 ```shell script
-docker build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native . 
+docker build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
 ```
 
 ## Running CloudEvents Player on Kubernetes
@@ -123,30 +123,15 @@ docker build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile
 
 ### Deploy the application
 
-Before creating it, make sure you update the configMap with the right brokerUrl endpoint.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cloudevents-player
-data:
-  application.properties: |
-    brokerUrl/mp-rest/url=http://default-broker.<PROJECT_NAME>.svc.cluster.local
-```
-
-Use [deploy.yaml](./src/main/knative/deploy.yaml) to create the resources
+Use [deploy_native.yaml](./src/main/knative/deploy_native.yaml) to create the resources
 
 ```shell script
 $ kubectl apply -n myproject -f src/main/knative/deploy_native.yaml
-configmap/cloudevents-player created
 service.serving.knative.dev/cloudevents-player created
 trigger.eventing.knative.dev/cloudevents-player created
 ```
 
 The following resources are created:
 
-* ConfigMap: Containing the application.properties file which will be mounted as a volume.
 * KNative Service: Pointing to the image and mounting the volume from the configMap
 * Trigger: To subscribe to any message in the broker
-
