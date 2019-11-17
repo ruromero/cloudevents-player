@@ -13,14 +13,18 @@ const {
   Divider,
   Drawer,
   Fab,
+  FormControl,
   Grid,
   Icon,
   IconButton,
   InputAdornment,
+  InputLabel,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -76,6 +80,7 @@ const useStyles = makeStyles(theme => ({
 function SendEvent() {
   const classes = useStyles();
   const [values, setValues] = React.useState({
+    specversion: "1.0",
     message: JSON.stringify({ message: "Hello CloudEvents!" }, null, " ")
   });
   const [dirty, setDirty] = React.useState({});
@@ -108,10 +113,11 @@ function SendEvent() {
       id: true,
       type: true,
       source: true,
+      specversion: true,
       message: true
     });
     let hasErrors = false;
-    ["id", "type", "source", "message"].forEach(field => {
+    ["id", "type", "source", "specversion", "message"].forEach(field => {
       if (validate(field, values[field]) !== null) {
         hasErrors = true;
       }
@@ -125,7 +131,7 @@ function SendEvent() {
           "ce-id": values.id,
           "ce-type": values.type,
           "ce-source": values.source,
-          "ce-specversion": "1.0"
+          "ce-specversion": values.specversion
         },
         body: values.message
       });
@@ -144,7 +150,7 @@ function SendEvent() {
           error={showError("id")}
           helperText={validate("id", values.id)}
           label="Event ID"
-          id="margin-normal"
+          id="id"
           className={classes.textField}
           margin="normal"
           value={values.id || ""}
@@ -168,7 +174,7 @@ function SendEvent() {
           error={showError("type")}
           helperText={validate("type", values.type)}
           label="Event Type"
-          id="margin-normal"
+          id="type"
           className={classes.textField}
           margin="normal"
           value={values.type || ""}
@@ -179,18 +185,34 @@ function SendEvent() {
           error={showError("source")}
           helperText={validate("source", values.source)}
           label="Event Source"
-          id="margin-normal"
+          id="source"
           className={classes.textField}
           margin="normal"
           value={values.source || ""}
           onChange={event => onValueChanged(event.target.value, "source")}
         />
+        <FormControl className={classes.textField}>
+        <InputLabel id="margin-normal">Specversion</InputLabel>
+        <Select
+          required
+          error={showError("specversion")}
+          helperText={validate("specversion", values.specversion)}
+          label="Specversion"
+          id="specversion"
+          value={values.specversion || ""}
+          onChange={event => onValueChanged(event.target.value, "specversion")}
+        >
+          <MenuItem value="1.0">1.0</MenuItem>
+          <MenuItem value="0.3">0.3</MenuItem>
+          <MenuItem value="0.2">0.2</MenuItem>
+        </Select>
+        </FormControl>
         <TextField
           required
           error={showError("message")}
           helperText={validate("message", values.message)}
           label="Message"
-          id="margin-normal"
+          id="message"
           className={classes.textField}
           margin="normal"
           multiline

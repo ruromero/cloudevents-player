@@ -12,8 +12,8 @@ import javax.json.JsonObject;
 import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
 import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
+import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
-import io.cloudevents.v1.AttributesImpl;
 import io.vertx.core.eventbus.EventBus;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -30,20 +30,20 @@ public class MessageService {
     @RestClient
     BrokerService brokerService;
 
-    public void send(CloudEvent<AttributesImpl, JsonObject> event) {
+    public void send(CloudEvent<? extends Attributes, JsonObject> event) {
         newEvent(event, MessageType.SENT);
-        brokerService.sendEvent(event);
+        brokerService.send(event);
     }
 
-    public void receive(CloudEvent<AttributesImpl, JsonObject> event) {
+    public void receive(CloudEvent<? extends Attributes, JsonObject> event) {
         newEvent(event, MessageType.RECEIVED);
     }
 
-    private void newEvent(CloudEvent<AttributesImpl, JsonObject> event, MessageType type) {
+    private void newEvent(CloudEvent<? extends Attributes, JsonObject> event, MessageType type) {
         messages.add(new Message(event, type));
         if (messages.size() > MAX_SIZE) {
             messages.stream().sorted(Comparator.comparing(Message::getReceivedAt)).limit(messages.size() - MAX_SIZE)
-                .forEach(m -> messages.remove(m));
+                .forEach(messages::remove);
         }
         eventBus.publish(MessagesSocket.MESSAGES_ADDRESS, event.getAttributes().getId());
     }

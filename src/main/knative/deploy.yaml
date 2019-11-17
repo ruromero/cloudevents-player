@@ -1,11 +1,3 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cloudevents-player
-data:
-  application.properties: |
-    brokerUrl/mp-rest/url=http://default-broker.default.svc.cluster.local
----
 apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
@@ -16,14 +8,11 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ruromero/cloudevents-player-jdk8:latest
+            image: ruromero/cloudevents-player:latest
             volumeMounts:
-              - name: configuration
-                mountPath: /deployments/config
-          volumes:
-            - name: configuration
-              configMap:
-                name: cloudevents-player
+              - name: BROKER_URL
+                mountPath: http://default-broker
+
 ---
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Trigger

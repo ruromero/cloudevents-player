@@ -22,8 +22,8 @@ import javax.ws.rs.core.Response;
 
 import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
+import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
-import io.cloudevents.v1.AttributesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +47,9 @@ public class MessageResource {
     }
 
     @POST
-    public CompletionStage<Response> sendEvent(CloudEvent<AttributesImpl, JsonObject> object) {
+    public CompletionStage<Response> sendEvent(CloudEvent<? extends Attributes, JsonObject> object) {
         return CompletableFuture.supplyAsync(() -> {
-            Set<ConstraintViolation<CloudEvent<AttributesImpl, JsonObject>>> violations = validator.validate(object);
+            Set<ConstraintViolation<CloudEvent<? extends Attributes, JsonObject>>> violations = validator.validate(object);
             if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }

@@ -9,15 +9,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
-import io.cloudevents.v1.AttributesImpl;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("/")
-@RegisterRestClient(configKey = "brokerUrl")
+@RegisterRestClient
 public interface BrokerService {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    CompletionStage<Response> sendEvent(CloudEvent<AttributesImpl, JsonObject> payload);
+    CompletionStage<Response> send(CloudEvent<? extends Attributes, JsonObject> payload);
 }
