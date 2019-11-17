@@ -14,7 +14,7 @@ import io.cloudevents.CloudEvent;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("/")
-@RegisterRestClient(configKey = "brokerUrl")
+@RegisterRestClient
 public interface BrokerService {
 
     @POST
