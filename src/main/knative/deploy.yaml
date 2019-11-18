@@ -8,11 +8,10 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ruromero/cloudevents-player:latest
-            volumeMounts:
+            image: ruromero/cloudevents-player-jdk8:latest
+            env
               - name: BROKER_URL
-                mountPath: http://default-broker
-
+                value: http://default-broker
 ---
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Trigger
