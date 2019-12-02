@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 const socket = new WebSocket("ws://" + window.location.host + "/socket");
 
-function ViewEvent({ event }) {
+const ViewEvent = ({ event }) => {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => setOpen(false);
 
@@ -64,13 +64,9 @@ function ViewEvent({ event }) {
   );
 }
 
-function EventTypeIcon({ type }) {
-  return (
-    <Tooltip title={type}>{type === "SENT" ? <Send /> : <Check />}</Tooltip>
-  );
-}
+const EventTypeIcon = ({ type }) => <Tooltip title={type}>{type === "SENT" ? <Send /> : <Check />}</Tooltip>;
 
-function getMessages(page, size, callback) {
+const getMessages = (page, size, callback) => {
   fetch("/messages?page=" + page + "&size=" + size, {
     headers: {
       Accept: "application/json",
@@ -85,7 +81,7 @@ function getMessages(page, size, callback) {
     });
 }
 
-function Activity() {
+const Activity = () => {
   const classes = useStyles();
   const [messages, setMessages] = React.useState([]);
 
@@ -95,7 +91,7 @@ function Activity() {
     });
   };
 
-  socket.onmessage = message => {
+  socket.onmessage = () => {
     getMessages(0, 200, messages => {
       setMessages(messages);
     });

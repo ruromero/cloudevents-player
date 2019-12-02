@@ -9,8 +9,8 @@ import {
   Typography
 } from "@material-ui/core";
 import "./App.css";
-import EventSender from "../EventSender";
-import Activity from "../Activity";
+import EventSender from "./EventSender";
+import Activity from "./Activity";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar
 }));
 
-function App() {
+const App = () => {
   const classes = useStyles();
 
   return (
