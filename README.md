@@ -7,67 +7,13 @@ the broker.
 
 ## Build and run the application
 
-It is a Quarkus application with a React frontend. In order to build the application use any of the
-following alternatives:
-
-### JVM Build
-
-Build
-
-```shell script
-mvn clean package
-```
-
-Run
-
-```shell script
-$ java -jar target/cloudevent-player-1.0-SNAPSHOT-runner.jar
-...
-2019-10-24 11:06:33,880 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 1.875s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:06:33,881 INFO  [io.quarkus] (main) Profile prod activated.
-2019-10-24 11:06:33,882 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
-```
-
-### Quarkus dev mode
-
-```shell script
-$ mvn clean compile quarkus:dev
-...
-Listening for transport dt_socket at address: 5005
-...
-2019-10-24 11:04:53,877 INFO  [io.quarkus] (main) Quarkus 0.26.1 started in 2.139s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:04:53,877 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
-2019-10-24 11:04:53,877 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
-```
-
-### Native build
-
-Build
-
-```shell script
-$ mvn clean package -Pnative
-```
-
-Run
-
-```shell script
-$ ./target/cloudevent-player-1.0-SNAPSHOT-runner
-...
-2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 0.048s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) Profile prod activated.
-2019-10-24 11:15:12,990 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
-```
-
-## Use the application locally
-
-By default, the application will send events to itself to ensure that both send/receive
+The application can be configured to send events to itself to ensure that both send/receive
 work well and send valid CloudEvents.
 
-If needed, the broker endpoint can be configured in the application.properties file.
-Create a ./config/application.properties file with the custom endpoint as in the example:
+The application requires the `broker.url` environment variable to be set.
 
-```properties
-brokerUrl/mp-rest/url=http://endpoint.example.com
+```{bash}
+BROKER_URL=http://localhost:8080 cloudevent-player-1.0-SNAPSHOT-runner
 ```
 
 You can send a message from inside the application by filling in the form and the activity will show the sent
@@ -77,8 +23,8 @@ You can also simulate the broker with the `curl`:
 
 ```shell script
 $ curl -v http://localhost:8080 \
-   -H "Content-Type: application/json" \
-   -H "Ce-Id: foo-1" \
+  -H "Content-Type: application/json" \
+  -H "Ce-Id: foo-1" \
   -H "Ce-Specversion: 1.0" \
   -H "Ce-Type: dev.example.events" \
   -H "Ce-Source: curl-source" \
@@ -98,6 +44,68 @@ $ curl -v http://localhost:8080 \
 < HTTP/1.1 202 Accepted
 < Content-Length: 0
 < Date: Thu, 24 Oct 2019 08:27:06 GMT
+```
+
+It is a Quarkus application with a React frontend. In order to build the application use any of the
+following alternatives:
+
+### JVM Build
+
+Build
+
+```shell script
+mvn clean package
+```
+
+Run
+
+```shell script
+$ BROKER_URL=http://localhost:8080 java -jar target/cloudevent-player-1.0-SNAPSHOT-runner.jar
+...
+2019-10-24 11:06:33,880 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 1.875s. Listening on: http://0.0.0.0:8080
+2019-10-24 11:06:33,881 INFO  [io.quarkus] (main) Profile prod activated.
+2019-10-24 11:06:33,882 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
+```
+
+### Quarkus dev mode
+
+```shell script
+$ BROKER_URL=http://localhost:8080 mvn clean compile quarkus:dev
+...
+Listening for transport dt_socket at address: 5005
+...
+[INFO] --- quarkus-maven-plugin:1.0.1.Final:dev (default-cli) @ cloudevent-player ---
+Listening for transport dt_socket at address: 5005
+2019-12-02 17:14:33,177 INFO  [io.und.web.jsr] (main) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
+2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Quarkus 1.0.1.Final started in 2.161s. Listening on: http://0.0.0.0:8080
+2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
+2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jsonb, servlet, undertow-websockets, vertx]
+```
+
+### Native build
+
+Build
+
+```shell script
+mvn clean package -Pnative
+```
+
+Run
+
+```shell script
+$ BROKER_URL=http://localhost:8080 ./target/cloudevent-player-1.0-SNAPSHOT-runner
+...
+2019-12-02 17:13:52,298 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 1.0.1.Final) started in 0.032s. Listening on: http://0.0.0.0:8080
+2019-12-02 17:13:52,299 INFO  [io.quarkus] (main) Profile prod activated.
+2019-12-02 17:13:52,299 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jsonb, servlet, undertow-websockets, vertx]
+```
+
+### Skip frontend build
+
+The `skipFrontend` profile will not run npm commands. Useful when you are just changing Java code.
+
+```{bash}
+mvn clean package -PskipFrontend
 ```
 
 ## Build the container image
