@@ -9,8 +9,8 @@ import {
   Typography
 } from "@material-ui/core";
 import "./App.css";
-import EventSender from "../EventSender";
-import Activity from "../Activity";
+import EventSender from "./EventSender";
+import Activity from "./Activity";
 
 const useStyles = makeStyles(theme => ({
   root: {
