@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function EventSender() {
+const EventSender = () => {
   const classes = useStyles();
   const [values, setValues] = React.useState({
     specversion: "1.0",

@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar
 }));
 
-function App() {
+const App = () => {
   const classes = useStyles();
 
   return (
