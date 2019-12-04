@@ -3,22 +3,16 @@ package com.redhat.syseng.tools.cloudevents.resources;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import com.redhat.syseng.tools.cloudevents.service.MessageService;
-
+import io.quarkus.vertx.ConsumeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.quarkus.vertx.ConsumeEvent;
-import io.vertx.core.eventbus.EventBus;
 
 @ServerEndpoint("/socket")
 @ApplicationScoped
@@ -28,12 +22,6 @@ public class MessagesSocket {
     public static final String MESSAGES_ADDRESS = "messages";
 
     final Map<String, Session> sessions = new ConcurrentHashMap<>();
-
-    @Inject
-    EventBus eventBus;
-
-    @Inject
-    MessageService msgService;
 
     @ConsumeEvent(MESSAGES_ADDRESS)
     public void onNewMessage(String message) {
@@ -59,12 +47,10 @@ public class MessagesSocket {
     }
 
     private void broadcast(String msg) {
-        sessions.values().forEach(s -> {
-            s.getAsyncRemote().sendObject(msg, result -> {
-                if (result.getException() != null) {
-                    LOGGER.error("Unable to broadcast message", result.getException());
-                }
-            });
-        });
+        sessions.values().forEach(s -> s.getAsyncRemote().sendObject(msg, result -> {
+            if (result.getException() != null) {
+                LOGGER.error("Unable to broadcast message", result.getException());
+            }
+        }));
     }
 }

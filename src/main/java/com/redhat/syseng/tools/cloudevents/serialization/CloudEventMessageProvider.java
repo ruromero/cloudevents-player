@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -34,7 +35,8 @@ import org.slf4j.LoggerFactory;
 public class CloudEventMessageProvider implements MessageBodyReader<CloudEvent<? extends Attributes, Object>>,
                                                   MessageBodyWriter<CloudEvent<? extends Attributes, Object>> {
 
-    private static final String SPECVERSION_HEADER = "ce-specversion";
+    private static final String SPECVERSION = "specversion";
+    private static final String SPECVERSION_HEADER = "ce-" + SPECVERSION;
     private static final String V1 = "1.0";
     private static final String V03 = "0.3";
     private static final String V02 = "0.2";
@@ -57,12 +59,19 @@ public class CloudEventMessageProvider implements MessageBodyReader<CloudEvent<?
             LOGGER.debug("Using existing validator instance");
             validator = CDI.current().select(Validator.class).get();
         }
-        List<String> specversionHeader = httpHeaders.get(SPECVERSION_HEADER);
-        if (specversionHeader.isEmpty()) {
+        JsonObject json = Json.createReader(entityStream).readObject();
+        if(json.containsKey(SPECVERSION)) {
+            return unmarshalStructured(json, httpHeaders, validator);
+        }
+        return unmarshalBinary(json, httpHeaders, validator);
+    }
+
+    private CloudEvent<? extends Attributes, Object> unmarshalBinary(JsonObject json, MultivaluedMap<String, String> httpHeaders, Validator validator) {
+        HeadersStep<? extends Attributes, Object, String> headersStep;
+        if (!httpHeaders.containsKey(SPECVERSION_HEADER)) {
             throw new IllegalArgumentException("Missing Specversion header");
         }
-        String specversion = specversionHeader.get(0);
-        HeadersStep<? extends Attributes, Object, String> headersStep;
+        String specversion = httpHeaders.get(SPECVERSION_HEADER).get(0);
         switch (specversion) {
             case V1:
                 headersStep = io.cloudevents.v1.http.Unmarshallers.binary(Object.class, validator);
@@ -76,9 +85,30 @@ public class CloudEventMessageProvider implements MessageBodyReader<CloudEvent<?
             default:
                 throw new IllegalArgumentException("Unsupported specversion: " + specversion);
         }
-
         return headersStep.withHeaders(() -> httpHeaders.entrySet().stream().collect(Collectors.toMap(Entry::getKey, this::getValue)))
-            .withPayload(() -> Json.createReader(entityStream).readObject().toString())
+            .withPayload(() -> json.toString())
+            .unmarshal();
+    }
+
+    private CloudEvent<? extends Attributes, Object> unmarshalStructured(JsonObject json, MultivaluedMap<String, String> httpHeaders, Validator validator) {
+        HeadersStep<? extends Attributes, Object, String> headersStep;
+
+        String specversion = json.getString(SPECVERSION);
+        switch (specversion) {
+            case V1:
+                headersStep = io.cloudevents.v1.http.Unmarshallers.structured(Object.class, validator);
+                break;
+            case V03:
+                headersStep = io.cloudevents.v03.http.Unmarshallers.structured(Object.class, validator);
+                break;
+            case V02:
+                headersStep = io.cloudevents.v02.http.Unmarshallers.structured(Object.class, validator);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported specversion: " + specversion);
+        }
+        return headersStep.withHeaders(() -> httpHeaders.entrySet().stream().collect(Collectors.toMap(Entry::getKey, this::getValue)))
+            .withPayload(() -> json.toString())
             .unmarshal();
     }
 
