@@ -15,7 +15,7 @@
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <cloudevents.version>1.0.0</cloudevents.version>
+    <cloudevents.version>1.1.0</cloudevents.version>
     <npm.version>6.13.1</npm.version>
     <node.version>v13.2.0</node.version>
   </properties>

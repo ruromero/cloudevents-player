@@ -45,7 +45,7 @@ Listening for transport dt_socket at address: 5005
 Build
 
 ```shell script
-$ mvn clean package -Pnative
+mvn clean package -Pnative
 ```
 
 Run
