@@ -123,6 +123,7 @@ const Activity = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Type</TableCell>
+            <TableCell>Subject</TableCell>
             <TableCell>Source</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Time</TableCell>
@@ -136,13 +137,16 @@ const Activity = () => {
             {messages.map((message, rowId) => (
               <TableRow key={rowId}>
                 <TableCell component="th" scope="row">
-                  {message.id}
+                  {message.id || "-"}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {message.event.attributes.type}
+                  {message.eventType || "-"}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {message.event.attributes.source}
+                  {message.subject || "-"}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {message.source || "-"}
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <EventTypeIcon type={message.type} />
@@ -151,7 +155,7 @@ const Activity = () => {
                   {message.receivedAt}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <ViewEvent event={message.event} />
+                  <ViewEvent event={message.data} />
                 </TableCell>
               </TableRow>
             ))}

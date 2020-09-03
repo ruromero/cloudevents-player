@@ -3,9 +3,7 @@ package com.redhat.syseng.tools.cloudevents.resources;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.Consumes;
@@ -16,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
-import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +32,10 @@ public class MessageReceiverResource {
     Validator validator;
 
     @POST
-    public CompletionStage<Response> receive(CloudEvent<? extends Attributes, JsonObject> object) {
+    public CompletionStage<Response> receive(CloudEvent object) {
         return CompletableFuture.supplyAsync(() -> {
-            LOGGER.debug("Received event: {}", object.getAttributes().getId());
-            Set<ConstraintViolation<CloudEvent<? extends Attributes, JsonObject>>> violations = validator.validate(object);
+            LOGGER.debug("Received event: {}", object.getId());
+            Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
             if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }

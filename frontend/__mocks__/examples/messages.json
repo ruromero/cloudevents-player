@@ -1,97 +1,68 @@
 [
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "7c30a718-0456-45c1-b418-b7c3dfcd8d3f",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.foo"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "7c30a718-0456-45c1-b418-b7c3dfcd8d3f",
+    "subject": "subject 1",
+    "source": "mock-server",
+    "type": "org.example.types.foo",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:51.376+01:00[Europe/Madrid]",
     "type": "RECEIVED"
   },
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "7c30a718-0456-45c1-b418-b7c3dfcd8d3f",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.foo"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "7c30a718-0456-45c1-b418-b7c3dfcd8d3f",
+    "subject": "subject 1",
+    "source": "mock-server",
+    "type": "org.example.types.foo",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:51.366+01:00[Europe/Madrid]",
     "type": "SENT"
   },
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "e783bf4c-92e3-419e-bd79-bc18eb783b2c",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.bar"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "e783bf4c-92e3-419e-bd79-bc18eb783b2c",
+    "subject": "subject 1",
+    "source": "mock-server",
+    "specversion": "1.0",
+    "eventType": "org.example.types.bar",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:50.203+01:00[Europe/Madrid]",
     "type": "RECEIVED"
   },
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "e783bf4c-92e3-419e-bd79-bc18eb783b2c",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.bar"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "e783bf4c-92e3-419e-bd79-bc18eb783b2c",
+    "subject": "subject 2",
+    "source": "mock-server",
+    "eventType": "org.example.types.bar",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:50.171+01:00[Europe/Madrid]",
     "type": "SENT"
   },
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "1038fe8b-f1a4-4a04-9722-73254c78f414",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.baz"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "1038fe8b-f1a4-4a04-9722-73254c78f414",
+    "subject": "subject 2",
+    "source": "mock-server",
+    "type": "org.example.types.baz",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:49.115+01:00[Europe/Madrid]",
     "type": "RECEIVED"
   },
   {
-    "event": {
-      "attributes": {
-        "datacontenttype": "application/json",
-        "id": "1038fe8b-f1a4-4a04-9722-73254c78f414",
-        "mediaType": "application/json",
-        "source": "mock-server",
-        "specversion": "1.0",
-        "type": "org.example.types.baz"
-      },
-      "data": { "message": "Hello CloudEvents!" }
-    },
     "id": "1038fe8b-f1a4-4a04-9722-73254c78f414",
+    "subject": "subject 2",
+    "source": "mock-server",
+    "type": "org.example.types.baz",
+    "data": {
+      "message": "Hello CloudEvents!"
+    },
     "receivedAt": "2019-12-02T13:16:48.766+01:00[Europe/Madrid]",
     "type": "SENT"
   }

@@ -5,6 +5,19 @@ KNative Eventing environment so that users can monitor received events in the Ac
 also send events of the desired type to see if it is being forwarded back to the application through
 the broker.
 
+The application has a web interface in which you can define the events you want to send to the broker:
+
+![create event](docs/images/create_event.png)
+
+In the right-hand side all the emitted and received events will be listed. In the image below there are two received 
+and one emitted event.
+
+![activity](docs/images/activity.png)
+
+And you will also be able to display the payload of the event.
+
+![event](docs/images/event.png)
+
 ## Build and run the application
 
 The application can be configured to send events to itself to ensure that both send/receive
@@ -113,13 +126,13 @@ mvn clean package -PskipFrontend
 ### JVM version
 
 ```shell script
-docker build -t ruromero/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
+podman build -t ruromero/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
 ```
 
 ### Native version
 
 ```shell script
-docker build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
+podman build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
 ```
 
 ## Running CloudEvents Player on Kubernetes
@@ -134,7 +147,7 @@ docker build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile
 Use [deploy_native.yaml](./src/main/knative/deploy_native.yaml) to create the resources
 
 ```shell script
-$ kubectl apply -n myproject -f src/main/knative/deploy_native.yaml
+$ kubectl apply -n myproject -f src/main/knative/deploy.yaml
 service.serving.knative.dev/cloudevents-player created
 trigger.eventing.knative.dev/cloudevents-player created
 ```

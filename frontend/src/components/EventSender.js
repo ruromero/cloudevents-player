@@ -63,6 +63,7 @@ const EventSender = () => {
     setDirty({
       id: true,
       type: true,
+      subject: true,
       source: true,
       specversion: true,
       message: true
@@ -81,6 +82,7 @@ const EventSender = () => {
           "Content-Type": "application/json",
           "ce-id": values.id,
           "ce-type": values.type,
+          "ce-subject": values.subject,
           "ce-source": values.source,
           "ce-specversion": values.specversion
         },
@@ -132,6 +134,14 @@ const EventSender = () => {
           onChange={event => onValueChanged(event.target.value, "type")}
         />
         <TextField
+          label="Event Subject"
+          id="subject"
+          className={classes.textField}
+          margin="normal"
+          value={values.subject || ""}
+          onChange={event => onValueChanged(event.target.value, "subject")}
+        />
+        <TextField
           required
           error={showError("source")}
           helperText={validate("source", values.source)}
@@ -156,7 +166,6 @@ const EventSender = () => {
           >
             <MenuItem value="1.0">1.0</MenuItem>
             <MenuItem value="0.3">0.3</MenuItem>
-            <MenuItem value="0.2">0.2</MenuItem>
           </Select>
         </FormControl>
         <TextField

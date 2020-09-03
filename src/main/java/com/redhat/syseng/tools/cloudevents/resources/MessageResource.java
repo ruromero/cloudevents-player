@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.Consumes;
@@ -22,7 +20,6 @@ import javax.ws.rs.core.Response;
 
 import com.redhat.syseng.tools.cloudevents.model.Message;
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
-import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +44,13 @@ public class MessageResource {
     }
 
     @POST
-    public CompletionStage<Response> sendEvent(CloudEvent<? extends Attributes, JsonObject> object) {
+    public CompletionStage<Response> sendEvent(CloudEvent object) {
         return CompletableFuture.supplyAsync(() -> {
-            Set<ConstraintViolation<CloudEvent<? extends Attributes, JsonObject>>> violations = validator.validate(object);
+            Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
             if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }
-            LOGGER.debug("New event to send: {} - {}", object.getAttributes().getId(), object.getData().get());
+            LOGGER.debug("New event to send: {} - {}", object.getId(), new String(object.getData()));
             msgService.send(object);
             return Response.accepted().build();
         });
