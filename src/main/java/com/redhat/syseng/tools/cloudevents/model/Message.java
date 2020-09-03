@@ -1,12 +1,15 @@
 package com.redhat.syseng.tools.cloudevents.model;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
-import javax.json.JsonObject;
-
-import io.cloudevents.Attributes;
 import io.cloudevents.CloudEvent;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.Json;
 
+@RegisterForReflection
 public class Message {
 
     public enum MessageType {
@@ -14,38 +17,46 @@ public class Message {
         RECEIVED
     }
 
-    private String id;
     private ZonedDateTime receivedAt;
-    private CloudEvent<? extends Attributes, JsonObject> event;
+    private CloudEvent event;
     private MessageType type;
 
-    public Message(CloudEvent<? extends Attributes, JsonObject> event, MessageType type) {
+    public Message(CloudEvent event, MessageType type) {
         this.receivedAt = ZonedDateTime.now();
         this.event = event;
         this.type = type;
-        this.id = event.getAttributes().getId();
-    }
-
-    public Message setId(String id) {
-        this.id = id;
-        return this;
     }
 
     public String getId() {
-        return id;
+        return event.getId();
     }
 
     public ZonedDateTime getReceivedAt() {
         return receivedAt;
     }
 
-    public Message setEvent(CloudEvent<? extends Attributes, JsonObject> event) {
+    public Message setEvent(CloudEvent event) {
         this.event = event;
         return this;
     }
 
-    public CloudEvent<? extends Attributes, JsonObject> getEvent() {
-        return event;
+    public String getSubject() {
+        return event.getSubject();
+    }
+
+    public String getEventType() {
+        return event.getType();
+    }
+
+    public URI getSource() {
+        return event.getSource();
+    }
+
+    public Map getData() {
+        if (event.getData() == null) {
+            return null;
+        }
+        return Json.decodeValue(Buffer.buffer(event.getData()), Map.class);
     }
 
     public MessageType getType() {

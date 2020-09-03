@@ -36,7 +36,7 @@ public class MessagesSocket {
 
     @OnClose
     public void onClose(Session session) {
-        LOGGER.debug("Closed session: {}", session.getId());
+        LOGGER.debug("Session closed: {}", session.getId());
         sessions.remove(session.getId());
     }
 
