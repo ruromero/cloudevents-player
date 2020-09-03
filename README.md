@@ -144,7 +144,7 @@ podman build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile
 
 ### Deploy the application
 
-Use [deploy_native.yaml](./src/main/knative/deploy_native.yaml) to create the resources
+Use [deploy.yaml](./src/main/knative/deploy.yaml) to create the resources
 
 ```shell script
 $ kubectl apply -n myproject -f src/main/knative/deploy.yaml
