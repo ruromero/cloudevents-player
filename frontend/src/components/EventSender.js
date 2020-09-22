@@ -4,6 +4,7 @@ import "typeface-roboto";
 import {
   makeStyles,
   Button,
+  Fab,
   FormControl,
   InputAdornment,
   IconButton,
@@ -13,7 +14,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import { Loop } from "@material-ui/icons";
+import { Loop, Delete } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -32,14 +33,29 @@ const EventSender = () => {
   const classes = useStyles();
   const [values, setValues] = React.useState({
     specversion: "1.0",
+    source: "player",
     message: JSON.stringify({ message: "Hello CloudEvents!" }, null, " ")
   });
+  const [extensions, setExtensions] = React.useState([]);
   const [dirty, setDirty] = React.useState({});
 
   const generateId = () => onValueChanged(uuid(), "id");
+
   const onValueChanged = (value, field) => {
     setValues({ ...values, [field]: value });
     setDirty({ ...dirty, [field]: true });
+  };
+
+  const onExtensionNameChanged = (value, index) => {
+    const tmp = [...extensions];
+    tmp[index].name = value;
+    setExtensions(tmp);
+  };
+
+  const onExtensionValueChanged = (value, index) => {
+    const tmp = [...extensions];
+    tmp[index].value = value;
+    setExtensions(tmp);
   };
 
   const validate = (field, value) => {
@@ -63,7 +79,6 @@ const EventSender = () => {
     setDirty({
       id: true,
       type: true,
-      subject: true,
       source: true,
       specversion: true,
       message: true
@@ -75,9 +90,7 @@ const EventSender = () => {
       }
     });
     if (!hasErrors) {
-      fetch("/messages", {
-        method: "POST",
-        headers: {
+      let headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
           "ce-id": values.id,
@@ -85,11 +98,29 @@ const EventSender = () => {
           "ce-subject": values.subject,
           "ce-source": values.source,
           "ce-specversion": values.specversion
-        },
+      };
+      extensions.forEach(e => {
+        if(e.name != "") {
+          headers["ce-" + e.name] = e.value;
+        }
+      });
+      fetch("/messages", {
+        method: "POST",
+        headers: headers,
         body: values.message
       });
     }
   };
+
+  const addExtension = () => {
+    setExtensions([...extensions, {name: "", value: ""}]);
+  }
+
+  const removeExtension = index => {
+    const temp = [...extensions];
+    temp.splice(index, 1);
+    setExtensions(temp);
+  }
 
   return (
     <React.Fragment>
@@ -180,6 +211,44 @@ const EventSender = () => {
           value={values.message}
           onChange={event => onValueChanged(event.target.value, "message")}
         />
+        <Button
+          variant="contained"
+          className={classes.button}
+          color="primary"
+          onClick={addExtension}
+        >
+          Add extension attribute
+        </Button>
+        {extensions.map((extension, index) => {
+          return (<div>
+            <TextField
+              label="Extension name"
+              id={"extensionName_" + index}
+              className={classes.textField}
+              margin="normal"
+              value={extension.name || ""}
+              onChange={event => onExtensionNameChanged(event.target.value, index)}
+            />
+            <TextField
+              label="Extension value"
+              id={"extensionValue_" + index}
+              className={classes.textField}
+              margin="normal"
+              value={extension.value || ""}
+              onChange={event => onExtensionValueChanged(event.target.value, index)}
+            />
+            <Fab
+                variant="extended"
+                color="secondary"
+                aria-label="delete"
+                className={classes.fab}
+                onClick={i => removeExtension(index)}
+              >
+                <Delete className={classes.leftButton}>delete</Delete>
+              </Fab>
+          </div>)
+          })
+        }
         <Button
           variant="contained"
           className={classes.button}
