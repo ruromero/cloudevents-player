@@ -105,6 +105,11 @@ const Activity = () => {
     });
   };
 
+  const toLocalDate = dateStr => {
+    const date = new Date(dateStr.substring(0, dateStr.indexOf('.')));
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
   return (
     <React.Fragment>
       <Fab
@@ -126,7 +131,7 @@ const Activity = () => {
             <TableCell>Subject</TableCell>
             <TableCell>Source</TableCell>
             <TableCell>Status</TableCell>
-            <TableCell>Time</TableCell>
+            <TableCell>Local Time</TableCell>
             <TableCell>Message</TableCell>
           </TableRow>
         </TableHead>
@@ -152,7 +157,7 @@ const Activity = () => {
                   <EventTypeIcon type={message.type} />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {message.receivedAt}
+                  {toLocalDate(message.receivedAt)}
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <ViewEvent event={message.data} />

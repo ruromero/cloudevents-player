@@ -3,6 +3,7 @@ package com.redhat.syseng.tools.cloudevents.model;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.cloudevents.CloudEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -50,6 +51,12 @@ public class Message {
 
     public URI getSource() {
         return event.getSource();
+    }
+
+    public Map<Object, Object> getExtensions() {
+        return event.getExtensionNames()
+                .stream()
+                .collect(Collectors.toUnmodifiableMap(e -> e, e -> event.getExtension(e)));
     }
 
     public Map getData() {
