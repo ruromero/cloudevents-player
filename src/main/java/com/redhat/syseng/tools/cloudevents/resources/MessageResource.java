@@ -49,6 +49,7 @@ public class MessageResource {
         return CompletableFuture.supplyAsync(() -> {
             Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
             if (!violations.isEmpty()) {
+                LOGGER.debug("Validation error {}", violations);
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }
             LOGGER.debug("New event to send: {}", object);

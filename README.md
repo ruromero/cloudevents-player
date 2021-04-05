@@ -127,13 +127,13 @@ mvn clean package -PskipFrontend
 ### JVM version
 
 ```shell script
-podman build -t ruromero/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
+podman build -t quay.io/ruben/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
 ```
 
 ### Native version
 
 ```shell script
-podman build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
+podman build -t quay.io/ruben/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
 ```
 
 ## Running CloudEvents Player on Kubernetes
