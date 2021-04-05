@@ -14,8 +14,10 @@ import io.vertx.core.json.Json;
 public class Message {
 
     public enum MessageType {
+        SENDING,
         SENT,
-        RECEIVED
+        RECEIVED,
+        FAILED
     }
 
     private ZonedDateTime receivedAt;
@@ -63,7 +65,7 @@ public class Message {
         if (event.getData() == null) {
             return null;
         }
-        return Json.decodeValue(Buffer.buffer(event.getData()), Map.class);
+        return Json.decodeValue(Buffer.buffer(event.getData().toBytes()), Map.class);
     }
 
     public MessageType getType() {

@@ -23,10 +23,10 @@ And you will also be able to display the payload of the event.
 The application can be configured to send events to itself to ensure that both send/receive
 work well and send valid CloudEvents.
 
-The application requires the `broker.url` environment variable to be set.
+By default the application will start using a loopback endpoint
 
 ```{bash}
-BROKER_URL=http://localhost:8080 cloudevent-player-1.0-SNAPSHOT-runner
+./target/cloudevent-player-1.0-SNAPSHOT-runner
 ```
 
 You can send a message from inside the application by filling in the form and the activity will show the sent
@@ -73,26 +73,26 @@ mvn clean package
 Run
 
 ```shell script
-$ BROKER_URL=http://localhost:8080 java -jar target/cloudevent-player-1.0-SNAPSHOT-runner.jar
+$ java -jar target/quarkus-app/quarkus-run.jar
 ...
-2019-10-24 11:06:33,880 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 0.26.1) started in 1.875s. Listening on: http://0.0.0.0:8080
-2019-10-24 11:06:33,881 INFO  [io.quarkus] (main) Profile prod activated.
-2019-10-24 11:06:33,882 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jackson, servlet, undertow-websockets, vertx]
+021-04-05 15:11:00,138 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT on JVM (powered by Quarkus 1.13.0.Final) started in 1.246s. Listening on: http://0.0.0.0:8080
+2021-04-05 15:11:00,138 INFO  [io.quarkus] (main) Profile prod activated. 
+2021-04-05 15:11:00,138 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, mutiny, rest-client, resteasy, resteasy-jsonb, servlet, smallrye-context-propagation, vertx, websockets] 
 ```
 
 ### Quarkus dev mode
 
 ```shell script
-$ BROKER_URL=http://localhost:8080 mvn clean compile quarkus:dev
+$ mvn clean compile quarkus:dev
 ...
 Listening for transport dt_socket at address: 5005
 ...
 [INFO] --- quarkus-maven-plugin:1.0.1.Final:dev (default-cli) @ cloudevent-player ---
 Listening for transport dt_socket at address: 5005
 2019-12-02 17:14:33,177 INFO  [io.und.web.jsr] (main) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
-2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Quarkus 1.0.1.Final started in 2.161s. Listening on: http://0.0.0.0:8080
+2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Quarkus 1.13.0.Final started in 2.161s. Listening on: http://0.0.0.0:8080
 2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
-2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jsonb, servlet, undertow-websockets, vertx]
+2019-12-02 17:14:33,556 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, mutiny, rest-client, resteasy, resteasy-jsonb, servlet, smallrye-context-propagation, vertx, websockets]
 ```
 
 ### Native build
@@ -100,17 +100,18 @@ Listening for transport dt_socket at address: 5005
 Build
 
 ```shell script
-mvn clean package -Pnative
+mvn clean install -Pnative -Dquarkus.native.container-build=true
 ```
 
 Run
 
 ```shell script
-$ BROKER_URL=http://localhost:8080 ./target/cloudevent-player-1.0-SNAPSHOT-runner
+$ ./target/cloudevent-player-1.0-SNAPSHOT-runner
 ...
-2019-12-02 17:13:52,298 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT (running on Quarkus 1.0.1.Final) started in 0.032s. Listening on: http://0.0.0.0:8080
-2019-12-02 17:13:52,299 INFO  [io.quarkus] (main) Profile prod activated.
-2019-12-02 17:13:52,299 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, rest-client, resteasy, resteasy-jsonb, servlet, undertow-websockets, vertx]
+2021-04-05 15:07:09,940 INFO  [io.quarkus] (main) cloudevent-player 1.0-SNAPSHOT native (powered by Quarkus 1.13.0.Final) started in 0.016s. Listening on: http://0.0.0.0:8080
+2021-04-05 15:07:09,940 INFO  [io.quarkus] (main) Profile prod activated. 
+2021-04-05 15:07:09,940 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, mutiny, rest-client, resteasy, resteasy-jsonb, servlet, smallrye-context-propagation, vertx, websockets]
+2021-04-05 15:07:12,937 INFO  [com.red.sys.too.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode LOCAL - broker: http://localhost:8080/
 ```
 
 ### Skip frontend build
@@ -126,13 +127,13 @@ mvn clean package -PskipFrontend
 ### JVM version
 
 ```shell script
-podman build -t ruromero/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
+podman build -t quay.io/ruben/cloudevents-player-jdk8:latest -f src/main/docker/Dockerfile.jvm .
 ```
 
 ### Native version
 
 ```shell script
-podman build -t ruromero/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
+podman build -t quay.io/ruben/cloudevents-player:latest -f src/main/docker/Dockerfile.native .
 ```
 
 ## Running CloudEvents Player on Kubernetes
@@ -156,3 +157,12 @@ The following resources are created:
 
 * KNative Service: Pointing to the image and mounting the volume from the configMap
 * Trigger: To subscribe to any message in the broker
+
+## Configuration
+
+Cloudevents player comes with 2 modes defined in the PLAYER_MODE environment variable:
+
+ * LOCAL: Received events are forwarded to the loopback broker. This mode is just for development and testing
+ * KNATIVE: The application will get the current namespace it is running in and will use the `PLAYER_BROKER` 
+ environment variable to decide which broker to connect to (`default` is the default broker).
+ 
