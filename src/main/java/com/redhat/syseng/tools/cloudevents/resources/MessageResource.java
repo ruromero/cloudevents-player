@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -50,7 +51,7 @@ public class MessageResource {
             if (!violations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
             }
-            LOGGER.debug("New event to send: {} - {}", object.getId(), new String(object.getData()));
+            LOGGER.debug("New event to send: {}", object);
             msgService.send(object);
             return Response.accepted().build();
         });

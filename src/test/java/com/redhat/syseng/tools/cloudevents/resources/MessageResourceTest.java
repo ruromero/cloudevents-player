@@ -11,9 +11,9 @@ public class MessageResourceTest {
     @Test
     public void getAll() {
         given()
-          .when().get("/messages")
-          .then()
-             .statusCode(200);
+                .when().get("/messages")
+                .then()
+                .statusCode(200);
     }
 
 }

@@ -11,8 +11,10 @@ spec:
       containers:
         - image: quay.io/ruben/cloudevents-player:latest
           env:
-            - name: BROKER_URL
-              value: http://broker-ingress.knative-eventing.svc.cluster.local/<my-namespace>/default
+            - name: PLAYER_MODE
+              value: KNATIVE
+            - name: PLAYER_BROKER
+              value: default
 ---
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger

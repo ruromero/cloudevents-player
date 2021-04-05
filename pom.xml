@@ -13,14 +13,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus-plugin.version>1.7.0.Final</quarkus-plugin.version>
+        <quarkus-plugin.version>1.13.0.Final</quarkus-plugin.version>
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>1.7.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>1.13.0.Final</quarkus.platform.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <frontend-maven-plugin.version>1.8.0</frontend-maven-plugin.version>
-        <cloudevents.version>2.0.0-milestone3</cloudevents.version>
+        <cloudevents.version>2.0.0</cloudevents.version>
         <npm.version>6.13.4</npm.version>
         <node.version>v13.2.0</node.version>
     </properties>
@@ -55,6 +55,10 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-kubernetes-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.cloudevents</groupId>
