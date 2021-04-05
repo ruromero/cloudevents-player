@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.redhat.syseng.tools</groupId>
     <artifactId>cloudevent-player</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <properties>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -26,7 +26,7 @@
         <connection>scm:git:https://github.com/ruromero/cloudevents-player.git</connection>
         <url>scm:git:git@github.com:ruromero/cloudevents-player.git</url>
         <developerConnection>scm:git:git@github.com:ruromero/cloudevents-player.git</developerConnection>
-      <tag>v1.0</tag>
+      <tag>HEAD</tag>
   </scm>
     <dependencyManagement>
         <dependencies>
