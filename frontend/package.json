@@ -1,23 +1,23 @@
 {
-  "name": "cloudevent-player",
+  "name": "cloudevents-player",
   "version": "0.0.0",
   "description": "CloudEvents Player",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ruromero/cloudevent-player.git"
+    "url": "https://github.com/ruromero/cloudevents-player.git"
   },
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.7.1",
     "@material-ui/icons": "^4.5.1",
     "lock-treatment-tool": "^0.4.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-json-view": "^1.19.1",
-    "react-scripts": "^3.4.1",
-    "serve": "^11.2.0",
+    "react-json-view": "^1.21.3",
+    "react-scripts": "^4.0.3",
+    "serve": "^11.3.2",
     "typeface-roboto": "0.0.75",
     "uuidv4": "^6.0.0"
   },
