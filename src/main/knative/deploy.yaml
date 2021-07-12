@@ -16,7 +16,7 @@ spec:
             - name: PLAYER_BROKER
               value: default
 ---
-apiVersion: eventing.knative.dev/v1beta1
+apiVersion: eventing.knative.dev/v1
 kind: Trigger
 metadata:
   name: cloudevents-player
