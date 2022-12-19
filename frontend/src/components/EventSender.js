@@ -100,7 +100,7 @@ const EventSender = () => {
           "ce-specversion": values.specversion
       };
       extensions.forEach(e => {
-        if(e.name != "") {
+        if(e.name !== "") {
           headers["ce-" + e.name] = e.value;
         }
       });

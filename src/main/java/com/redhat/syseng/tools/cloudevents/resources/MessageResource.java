@@ -8,10 +8,12 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -19,11 +21,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.redhat.syseng.tools.cloudevents.model.Message;
-import com.redhat.syseng.tools.cloudevents.service.MessageService;
-import io.cloudevents.CloudEvent;
+import org.jboss.resteasy.reactive.ResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.syseng.tools.cloudevents.model.Message;
+import com.redhat.syseng.tools.cloudevents.service.MessageService;
+
+import io.cloudevents.CloudEvent;
 
 @Path("/messages")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -37,6 +44,9 @@ public class MessageResource {
 
     @Inject
     Validator validator;
+    
+    @Inject
+    ObjectMapper mapper;
 
     @GET
     public CompletionStage<List<Message>> list(@QueryParam("page") @DefaultValue("0") Integer page,
@@ -45,16 +55,21 @@ public class MessageResource {
     }
 
     @POST
-    public CompletionStage<Response> sendEvent(CloudEvent object) {
+    @ResponseStatus(202)
+    public CompletableFuture<Void> sendEvent(CloudEvent object) {
         return CompletableFuture.supplyAsync(() -> {
             Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
             if (!violations.isEmpty()) {
                 LOGGER.debug("Validation error {}", violations);
-                return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
+                try {
+                    throw new BadRequestException(mapper.writeValueAsString(violations));
+                } catch (JsonProcessingException e) {
+                    throw new InternalServerErrorException(e);
+                }
             }
             LOGGER.debug("New event to send: {}", object);
             msgService.send(object);
-            return Response.accepted().build();
+            return null;
         });
     }
 
