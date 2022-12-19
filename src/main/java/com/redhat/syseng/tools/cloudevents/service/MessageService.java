@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -13,17 +13,19 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.redhat.syseng.tools.cloudevents.model.Message;
-import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
-import com.redhat.syseng.tools.cloudevents.model.PlayerMode;
-import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
-import io.cloudevents.CloudEvent;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.vertx.core.eventbus.EventBus;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.redhat.syseng.tools.cloudevents.model.Message;
+import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
+import com.redhat.syseng.tools.cloudevents.model.PlayerMode;
+import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
+
+import io.cloudevents.CloudEvent;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
 public class MessageService {
@@ -33,11 +35,17 @@ public class MessageService {
     private static final int MAX_SIZE = 200;
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
 
-    @ConfigProperty(name = "player.mode", defaultValue = "LOCAL")
-    PlayerMode mode;
+    @ConfigProperty(name = "player.mode")
+    Optional<PlayerMode> mode;
 
-    @ConfigProperty(name = "player.broker", defaultValue = DEFAULT_BROKER)
+    @ConfigProperty(name = "broker.name", defaultValue = DEFAULT_BROKER)
     String brokerName;
+
+    @ConfigProperty(name = "broker.namespace")
+    Optional<String> brokerNamespace;
+
+    @ConfigProperty(name = "broker.uri")
+    Optional<String> brokerUri;
 
     private final List<Message> messages = new ArrayList<>();
 
@@ -52,25 +60,34 @@ public class MessageService {
     @PostConstruct
     public void init() {
         URI baseUri = LOOPBACK_BASE_URI;
-        if (PlayerMode.KNATIVE.equals(mode) && kClient.getMasterUrl() != null) {
-            baseUri = UriBuilder.fromUri("http://broker-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(kClient.getNamespace(), brokerName);
+        PlayerMode playerMode = mode.orElse(PlayerMode.KNATIVE);
+        if (PlayerMode.KNATIVE.equals(playerMode)) {
+            if (brokerUri.isPresent()) {
+                baseUri = URI.create(brokerUri.get());
+            } else if (kClient.getMasterUrl() != null) {
+                var namespace = brokerNamespace.orElse(kClient.getNamespace());
+                baseUri = UriBuilder.fromUri("http://broker-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(namespace, brokerName);
+            } else {
+                LOGGER.error("Unable to define the default namespace");
+                throw new IllegalStateException("Unable to define the default namespace. The Kubernetes Client cannot get the masterUrl");
+            }
         }
         brokerService = RestClientBuilder.newBuilder().baseUri(baseUri).build(BrokerService.class);
-        LOGGER.info("Player mode {} - broker: {} ", mode, baseUri);
+        LOGGER.info("Player mode {} - broker: {} ", playerMode, baseUri);
     }
 
     public void send(CloudEvent event) {
         brokerService.send(event).whenComplete((response, throwable) -> {
-          if(throwable != null) {
-              LOGGER.error("Unable to send cloudEvent", throwable);
-              newEvent(event, MessageType.FAILED);
-          } else if(Response.Status.BAD_REQUEST.getStatusCode() <= response.getStatus()) {
-              LOGGER.error("Unable to send cloudEvent. StatusCode: {}", response.getStatus());
-              newEvent(event, MessageType.FAILED);
-          } else {
-              LOGGER.debug("Successfully sent cloudevent {}", event);
-              newEvent(event, MessageType.SENT);
-          }
+            if (throwable != null) {
+                LOGGER.error("Unable to send cloudEvent", throwable);
+                newEvent(event, MessageType.FAILED);
+            } else if (Response.Status.BAD_REQUEST.getStatusCode() <= response.getStatus()) {
+                LOGGER.error("Unable to send cloudEvent. StatusCode: {}", response.getStatus());
+                newEvent(event, MessageType.FAILED);
+            } else {
+                LOGGER.debug("Successfully sent cloudevent {}", event);
+                newEvent(event, MessageType.SENT);
+            }
         });
     }
 
