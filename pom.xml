@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.syseng.tools</groupId>
   <artifactId>cloudevent-player</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <scm>
     <connection>scm:git:https://github.com/ruromero/cloudevents-player.git</connection>
     <developerConnection>scm:git:git@github.com:ruromero/cloudevents-player.git</developerConnection>
     <url>scm:git:git@github.com:ruromero/cloudevents-player.git</url>
+    <tag>v1.1</tag>
   </scm>
   <properties>
     <cloudevents.version>2.4.0</cloudevents.version>
