@@ -9,7 +9,7 @@ spec:
         autoscaling.knative.dev/minScale: "1"
     spec:
       containers:
-        - image: quay.io/ruben/cloudevents-player:v1.2
+        - image: quay.io/ruben/cloudevents-player:v1.1
           env:
             - name: PLAYER_MODE
               value: KNATIVE
