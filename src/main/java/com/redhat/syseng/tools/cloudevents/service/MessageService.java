@@ -61,6 +61,7 @@ public class MessageService {
     public void init() {
         URI baseUri = LOOPBACK_BASE_URI;
         PlayerMode playerMode = mode.orElse(PlayerMode.KNATIVE);
+        LOGGER.info("Player mode {}", playerMode);
         if (PlayerMode.KNATIVE.equals(playerMode)) {
             if (brokerUri.isPresent()) {
                 baseUri = URI.create(brokerUri.get());
@@ -73,7 +74,7 @@ public class MessageService {
             }
         }
         brokerService = RestClientBuilder.newBuilder().baseUri(baseUri).build(BrokerService.class);
-        LOGGER.info("Player mode {} - broker: {} ", playerMode, baseUri);
+        LOGGER.info("Broker endpoint: {}", baseUri);
     }
 
     public void send(CloudEvent event) {
