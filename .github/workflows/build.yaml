@@ -1,10 +1,11 @@
 name: Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'main'
     tags:
-      - 'v*'
+      - 'v**'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,12 +24,23 @@ jobs:
       - name: Build the project
         run: |
           ./mvnw package -Pnative
+      - name: Define tags
+        shell: bash
+        run: |
+          POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION=${POM_VERSION%-SNAPSHOT}
+          if [ ${{ github.ref }} != 'refs/heads/main' ]; then
+            echo TAGS="latest, $VERSION"
+          else
+            echo TAGS="$VERSION"
+          fi
+        id: build_tags
       - name: Build the container image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
           image: cloudevents-player
-          tags: v1.2
+          tags: ${{ steps.build_tags.outputs.TAGS }}
           archs: amd64, arm64
           dockerfiles: |
             ./src/main/docker/Dockerfile.native-micro
