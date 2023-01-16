@@ -30,9 +30,9 @@ jobs:
           POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
           VERSION=${POM_VERSION%-SNAPSHOT}
           if [ ${{ github.ref }} == 'refs/heads/main' ]; then
-            echo "docker_tag=latest ${VERSION}"
+            echo "docker_tag=latest ${VERSION}" >> $GITHUB_OUTPUT
           else
-            echo "docker_tag=${VERSION}"
+            echo "docker_tag=${VERSION}" >> $GITHUB_OUTPUT
           fi
         id: build_tags
       - name: Build the container image
