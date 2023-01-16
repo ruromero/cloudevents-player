@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
-          VERSION=${POM_VERSION%-SNAPSHOT}
+          VERSION=v${POM_VERSION%-SNAPSHOT}
           if [ ${{ github.ref }} == 'refs/heads/main' ]; then
             echo "docker_tag=latest ${VERSION}" >> $GITHUB_OUTPUT
           else
