@@ -1,0 +1,43 @@
+name: Build
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*.*.*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up graalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '17'
+          components: 'native-image'
+      - name: Build the project
+        run: |
+          ./mvnw package -Pnative
+      - name: Build the container image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: cloudevents-player
+          tags: v1.2
+          archs: amd64, arm64
+          dockerfiles: |
+            ./src/main/docker/Dockerfile.native-micro
+      - name: Push to registry
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: quay.io/ruben
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      
