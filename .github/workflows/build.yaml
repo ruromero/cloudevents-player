@@ -29,10 +29,10 @@ jobs:
         run: |
           POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
           VERSION=${POM_VERSION%-SNAPSHOT}
-          if [ ${{ github.ref }} != 'refs/heads/main' ]; then
-            echo TAGS="latest, $VERSION"
+          if [ ${{ github.ref }} == 'refs/heads/main' ]; then
+            echo "docker_tag=latest ${VERSION}"
           else
-            echo TAGS="$VERSION"
+            echo "docker_tag=${VERSION}"
           fi
         id: build_tags
       - name: Build the container image
@@ -40,7 +40,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: cloudevents-player
-          tags: ${{ steps.build_tags.outputs.TAGS }}
+          tags: ${{ steps.build_tags.outputs.docker_tag }}
           archs: amd64, arm64
           dockerfiles: |
             ./src/main/docker/Dockerfile.native-micro
