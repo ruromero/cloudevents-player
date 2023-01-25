@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import io.vertx.core.eventbus.EventBus;
 @ApplicationScoped
 public class MessageService {
 
-    private static final URI LOOPBACK_BASE_URI = URI.create("http://localhost:8080/");
+    private static final String LOOPBACK_BASE_URI = "http://localhost:%s/";
     private static final String DEFAULT_BROKER = "default";
     private static final int MAX_SIZE = 200;
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
@@ -47,6 +48,9 @@ public class MessageService {
     @ConfigProperty(name = "broker.uri")
     Optional<String> brokerUri;
 
+    @ConfigProperty(name = "quarkus.http.port")
+    String port;
+
     private final List<Message> messages = new ArrayList<>();
 
     @Inject
@@ -59,7 +63,7 @@ public class MessageService {
 
     @PostConstruct
     public void init() {
-        URI baseUri = LOOPBACK_BASE_URI;
+        URI baseUri = URI.create(String.format(LOOPBACK_BASE_URI, port));
         PlayerMode playerMode = mode.orElse(PlayerMode.KNATIVE);
         LOGGER.info("Player mode {}", playerMode);
         if (PlayerMode.KNATIVE.equals(playerMode)) {
@@ -77,19 +81,25 @@ public class MessageService {
         LOGGER.info("Broker endpoint: {}", baseUri);
     }
 
-    public void send(CloudEvent event) {
-        brokerService.send(event).whenComplete((response, throwable) -> {
-            if (throwable != null) {
-                LOGGER.error("Unable to send cloudEvent", throwable);
-                newEvent(event, MessageType.FAILED);
-            } else if (Response.Status.BAD_REQUEST.getStatusCode() <= response.getStatus()) {
+    public void send(CloudEvent event, boolean isStructured) {
+        try {
+            RestResponse<Void> response;
+            if (isStructured) {
+                response = brokerService.sendStructured(event);
+            } else {
+                response = brokerService.sendBinary(event);
+            }
+            if (Response.Status.BAD_REQUEST.getStatusCode() <= response.getStatus()) {
                 LOGGER.error("Unable to send cloudEvent. StatusCode: {}", response.getStatus());
                 newEvent(event, MessageType.FAILED);
             } else {
                 LOGGER.debug("Successfully sent cloudevent {}", event);
                 newEvent(event, MessageType.SENT);
-            }
-        });
+            }     
+        } catch(Throwable t) {
+            LOGGER.error("Unable to send cloudEvent", t);
+            newEvent(event, MessageType.FAILED);
+        }
     }
 
     public void receive(CloudEvent event) {

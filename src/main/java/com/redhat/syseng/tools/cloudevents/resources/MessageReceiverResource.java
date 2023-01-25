@@ -1,9 +1,8 @@
 package com.redhat.syseng.tools.cloudevents.resources;
 
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -24,10 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.syseng.tools.cloudevents.service.MessageService;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Path("/")
-@Consumes(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE})
 @Produces(MediaType.APPLICATION_JSON)
+@RegisterForReflection
 public class MessageReceiverResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageReceiverResource.class);
@@ -43,20 +45,17 @@ public class MessageReceiverResource {
 
     @POST
     @ResponseStatus(202)
-    public CompletionStage<Void> receive(CloudEvent object) {
-        return CompletableFuture.supplyAsync(() -> {
-            LOGGER.debug("Received event: {}", object.getId());
-            Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
-            if (!violations.isEmpty()) {
-                try {
-                    throw new BadRequestException(mapper.writeValueAsString(violations));
-                } catch (JsonProcessingException e) {
-                    throw new InternalServerErrorException(e);
-                }
+    public void receive(CloudEvent object) {
+        LOGGER.debug("Received event: {}", object.getId());
+        Set<ConstraintViolation<CloudEvent>> violations = validator.validate(object);
+        if (!violations.isEmpty()) {
+            try {
+                throw new BadRequestException(mapper.writeValueAsString(violations));
+            } catch (JsonProcessingException e) {
+                throw new InternalServerErrorException(e);
             }
-            msgService.receive(object);
-            return null;
-        });
+        }
+        msgService.receive(object);
     }
 
 }
