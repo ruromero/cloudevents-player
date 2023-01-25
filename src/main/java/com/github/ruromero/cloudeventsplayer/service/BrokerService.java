@@ -1,4 +1,4 @@
-package com.redhat.syseng.tools.cloudevents.service;
+package com.github.ruromero.cloudeventsplayer.service;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

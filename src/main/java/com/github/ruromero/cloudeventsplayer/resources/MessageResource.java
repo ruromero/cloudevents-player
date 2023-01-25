@@ -1,4 +1,4 @@
-package com.redhat.syseng.tools.cloudevents.resources;
+package com.github.ruromero.cloudeventsplayer.resources;
 
 import java.util.List;
 import java.util.Set;
@@ -25,15 +25,17 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.syseng.tools.cloudevents.model.Message;
-import com.redhat.syseng.tools.cloudevents.service.MessageService;
+import com.github.ruromero.cloudeventsplayer.model.Message;
+import com.github.ruromero.cloudeventsplayer.service.MessageService;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.jackson.JsonFormat;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Path("/messages")
 @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE})
 @Produces(MediaType.APPLICATION_JSON)
+@RegisterForReflection
 public class MessageResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageResource.class);
