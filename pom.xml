@@ -11,7 +11,7 @@
     <url>scm:git:git@github.com:ruromero/cloudevents-player.git</url>
   </scm>
   <properties>
-    <cloudevents.version>2.4.0</cloudevents.version>
+    <cloudevents.version>2.4.1</cloudevents.version>
     <compiler-plugin.version>3.10.1</compiler-plugin.version>
     <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
@@ -28,7 +28,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.15.3.Final</quarkus.platform.version>
     <quarkus-plugin.version>${quarkus.platform.version}</quarkus-plugin.version>
 
     <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
@@ -65,7 +65,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client</artifactId>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -73,7 +73,7 @@
     </dependency>
     <dependency>
       <groupId>io.cloudevents</groupId>
-      <artifactId>cloudevents-api</artifactId>
+      <artifactId>cloudevents-json-jackson</artifactId>
       <version>${cloudevents.version}</version>
     </dependency>
     <dependency>
