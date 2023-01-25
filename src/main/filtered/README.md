@@ -1,7 +1,8 @@
 # CloudEvents Player
 
 ![Build](https://img.shields.io/github/actions/workflow/status/ruromero/cloudevents-player/build.yaml)
-![Container](https://quay.io/repository/ruben/cloudevents-player/status)
+[![amd64](https://img.shields.io/badge/container-amd64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
+[![arm64](https://img.shields.io/badge/container-arm64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
 
 * [Build](#build)
   + [JVM Build](#jvm-build)

@@ -1,7 +1,8 @@
 # CloudEvents Player
 
 ![Build](https://img.shields.io/github/actions/workflow/status/ruromero/cloudevents-player/build.yaml)
-![Container](https://quay.io/repository/ruben/cloudevents-player/status)
+[![amd64](https://img.shields.io/badge/container-amd64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
+[![arm64](https://img.shields.io/badge/container-arm64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
 
 * [Build](#build)
   + [JVM Build](#jvm-build)
@@ -97,7 +98,7 @@ $ ./target/cloudevents-player-1.2-SNAPSHOT-runner -Dplayer.mode=LOCAL
 2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) cloudevents-player 1.2-SNAPSHOT native (powered by Quarkus 2.15.3.Final) started in 0.022s. Listening on: http://0.0.0.0:8080
 2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) Profile prod activated. 
 2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, rest-client-reactive, rest-client-reactive-jackson, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx, websockets, websockets-client]
-2022-06-24 18:48:17,028 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode LOCAL - broker: http://localhost:8080/ 
+2022-06-24 18:48:17,028 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode LOCAL - broker: http://localhost:8080/
 ```
 
 ### Skip frontend build
