@@ -1,4 +1,4 @@
-package com.redhat.syseng.tools.cloudevents.service;
+package com.github.ruromero.cloudeventsplayer.service;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ import org.jboss.resteasy.reactive.RestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redhat.syseng.tools.cloudevents.model.Message;
-import com.redhat.syseng.tools.cloudevents.model.Message.MessageType;
-import com.redhat.syseng.tools.cloudevents.model.PlayerMode;
-import com.redhat.syseng.tools.cloudevents.resources.MessagesSocket;
+import com.github.ruromero.cloudeventsplayer.model.Message;
+import com.github.ruromero.cloudeventsplayer.model.Message.MessageType;
+import com.github.ruromero.cloudeventsplayer.model.PlayerMode;
+import com.github.ruromero.cloudeventsplayer.resources.MessagesSocket;
 
 import io.cloudevents.CloudEvent;
 import io.fabric8.kubernetes.client.KubernetesClient;

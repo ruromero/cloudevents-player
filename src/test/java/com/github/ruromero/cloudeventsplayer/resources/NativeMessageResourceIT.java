@@ -1,6 +1,7 @@
-package com.redhat.syseng.tools.cloudevents.resources;
+package com.github.ruromero.cloudeventsplayer.resources;
 
-import com.redhat.syseng.tools.cloudevents.LocalModeProfile;
+import com.github.ruromero.cloudeventsplayer.LocalModeProfile;
+
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.quarkus.test.junit.TestProfile;
 

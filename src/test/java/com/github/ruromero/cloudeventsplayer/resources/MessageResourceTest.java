@@ -1,4 +1,7 @@
-package com.redhat.syseng.tools.cloudevents.resources;
+package com.github.ruromero.cloudeventsplayer.resources;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,17 +10,14 @@ import javax.json.Json;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.restassured.RestAssured;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.redhat.syseng.tools.cloudevents.LocalModeProfile;
+import com.github.ruromero.cloudeventsplayer.LocalModeProfile;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
+import io.restassured.RestAssured;
 
 @QuarkusTest
 @TestProfile(LocalModeProfile.class)

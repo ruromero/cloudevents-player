@@ -1,4 +1,4 @@
-package com.redhat.syseng.tools.cloudevents.model;
+package com.github.ruromero.cloudeventsplayer.model;
 
 import java.net.URI;
 import java.time.ZonedDateTime;

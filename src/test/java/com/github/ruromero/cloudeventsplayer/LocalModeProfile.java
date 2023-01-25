@@ -1,8 +1,8 @@
-package com.redhat.syseng.tools.cloudevents;
+package com.github.ruromero.cloudeventsplayer;
 
 import java.util.Map;
 
-import com.redhat.syseng.tools.cloudevents.model.PlayerMode;
+import com.github.ruromero.cloudeventsplayer.model.PlayerMode;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
 

@@ -1,8 +1,7 @@
-package com.redhat.syseng.tools.cloudevents.resources;
+package com.github.ruromero.cloudeventsplayer.resources;
 
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.syseng.tools.cloudevents.service.MessageService;
+import com.github.ruromero.cloudeventsplayer.service.MessageService;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.jackson.JsonFormat;
