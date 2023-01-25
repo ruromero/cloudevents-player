@@ -75,7 +75,7 @@ Run
 ```shell script
 $ java -Dplayer.mode=LOCAL -jar target/quarkus-app/quarkus-run.jar
 ...
-2022-06-24 18:39:07,794 INFO  [io.und.websockets] (main) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
+2022-06-24 18:39:07,794 INFO  [io.und.websockets] (main) UT026003: Adding annotated server endpoint class com.github.ruromero.cloudeventsplayer.resources.MessagesSocket for path /socket
 2022-06-24 18:39:08,130 INFO  [io.qua.sma.ope.run.OpenApiRecorder] (main) Default CORS properties will be used, please use 'quarkus.http.cors' properties instead
 2022-06-24 18:39:08,216 INFO  [io.quarkus] (main) cloudevent-player ${project.version} on JVM (powered by Quarkus ${quarkus.platform.version}) started in 0.879s. Listening on: http://0.0.0.0:8080
 2022-06-24 18:39:08,217 INFO  [io.quarkus] (main) Profile prod activated. 
@@ -91,7 +91,7 @@ Listening for transport dt_socket at address: 5005
 ...
 [INFO] --- quarkus-maven-plugin:1.0.1.Final:dev (default-cli) @ cloudevent-player ---
 Listening for transport dt_socket at address: 5005
-2022-06-24 18:51:43,172 INFO  [io.und.websockets] (Quarkus Main Thread) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
+2022-06-24 18:51:43,172 INFO  [io.und.websockets] (Quarkus Main Thread) UT026003: Adding annotated server endpoint class com.github.ruromero.cloudeventsplayer.resources.MessagesSocket for path /socket
 
 2022-06-24 18:51:43,229 WARN  [org.jbo.res.res.i18n] (Quarkus Main Thread) RESTEASY002155: Provider class io.cloudevents.http.restful.ws.CloudEventsProvider is already registered.  2nd registration is being ignored.
 2022-06-24 18:51:43,513 INFO  [io.quarkus] (Quarkus Main Thread) cloudevent-player ${project.version} on JVM (powered by Quarkus ${quarkus.platform.version}) started in 2.543s. Listening on: http://localhost:8080
