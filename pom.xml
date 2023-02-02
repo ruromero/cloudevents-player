@@ -28,7 +28,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <quarkus.platform.version>2.15.3.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.16.1.Final</quarkus.platform.version>
     <quarkus-plugin.version>${quarkus.platform.version}</quarkus-plugin.version>
 
     <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
