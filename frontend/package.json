@@ -19,7 +19,7 @@
     "react-scripts": "^4.0.3",
     "serve": "^11.3.2",
     "typeface-roboto": "0.0.75",
-    "uuidv4": "^6.0.0"
+    "uuidv4": "^6.2.13"
   },
   "scripts": {
     "build": "react-scripts build",
