@@ -4,36 +4,32 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.syseng.tools</groupId>
   <artifactId>cloudevent-player</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <scm>
     <connection>scm:git:https://github.com/ruromero/cloudevents-player.git</connection>
     <developerConnection>scm:git:git@github.com:ruromero/cloudevents-player.git</developerConnection>
     <url>scm:git:git@github.com:ruromero/cloudevents-player.git</url>
   </scm>
   <properties>
+    <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
     <cloudevents.version>2.4.0</cloudevents.version>
     <compiler-plugin.version>3.10.1</compiler-plugin.version>
     <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
-    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <maven-release-plugin.version>3.0.0-M6</maven-release-plugin.version>
-    <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-    <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-
     <node.version>v14.17.3</node.version>
     <npm.version>6.14.13</npm.version>
-
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-    <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
     <quarkus-plugin.version>${quarkus.platform.version}</quarkus-plugin.version>
-
-    <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
     <quarkus.container-image.group>ruben</quarkus.container-image.group>
     <quarkus.container-image.name>cloudevents-player</quarkus.container-image.name>
+    <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
+    <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
+    <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -83,7 +79,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-container-image-jib</artifactId>
+      <artifactId>quarkus-container-image-docker</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
