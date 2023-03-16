@@ -13,7 +13,7 @@ spec:
           env:
             - name: PLAYER_MODE
               value: KNATIVE
-            - name: PLAYER_BROKER
+            - name: BROKER_NAME
               value: default
 ---
 apiVersion: eventing.knative.dev/v1
