@@ -190,7 +190,7 @@ The following resources are created:
 Cloudevents-player comes with 2 modes defined in the PLAYER_MODE environment variable:
 
 - LOCAL: Received events are forwarded to the loopback broker. This mode is just for development and testing 
-- KNATIVE (default): The application will get the current namespace it is running in and will use the `PLAYER_BROKER` 
+- KNATIVE (default): The application will get the current namespace it is running in and will use the `BROKER_NAME`
  environment variable to decide which broker to connect to (`default` is the default broker).
 
 ```bash
