@@ -60,7 +60,7 @@ $ java -Dplayer.mode=LOCAL -jar target/quarkus-app/quarkus-run.jar
 ...
 2022-06-24 18:39:07,794 INFO  [io.und.websockets] (main) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
 2022-06-24 18:39:08,130 INFO  [io.qua.sma.ope.run.OpenApiRecorder] (main) Default CORS properties will be used, please use 'quarkus.http.cors' properties instead
-2022-06-24 18:39:08,216 INFO  [io.quarkus] (main) cloudevents-player 1.3-SNAPSHOT on JVM (powered by Quarkus 2.16.1.Final) started in 0.879s. Listening on: http://0.0.0.0:8080
+2022-06-24 18:39:08,216 INFO  [io.quarkus] (main) cloudevents-player 1.2 on JVM (powered by Quarkus 2.16.1.Final) started in 0.879s. Listening on: http://0.0.0.0:8080
 2022-06-24 18:39:08,217 INFO  [io.quarkus] (main) Profile prod activated. 
 2022-06-24 18:39:08,217 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, rest-client, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, smallrye-openapi, vertx, websockets, websockets-client] 
 ```
@@ -77,7 +77,7 @@ Listening for transport dt_socket at address: 5005
 2022-06-24 18:51:43,172 INFO  [io.und.websockets] (Quarkus Main Thread) UT026003: Adding annotated server endpoint class com.redhat.syseng.tools.cloudevents.resources.MessagesSocket for path /socket
 
 2022-06-24 18:51:43,229 WARN  [org.jbo.res.res.i18n] (Quarkus Main Thread) RESTEASY002155: Provider class io.cloudevents.http.restful.ws.CloudEventsProvider is already registered.  2nd registration is being ignored.
-2022-06-24 18:51:43,513 INFO  [io.quarkus] (Quarkus Main Thread) cloudevents-player 1.3-SNAPSHOT on JVM (powered by Quarkus 2.16.1.Final) started in 2.543s. Listening on: http://localhost:8080
+2022-06-24 18:51:43,513 INFO  [io.quarkus] (Quarkus Main Thread) cloudevents-player 1.2 on JVM (powered by Quarkus 2.16.1.Final) started in 2.543s. Listening on: http://localhost:8080
 2022-06-24 18:51:43,514 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
 2022-06-24 18:51:43,515 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, hibernate-validator, kubernetes-client, rest-client-reactive, rest-client-reactive-jackson, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx, websockets, websockets-client]
 ```
@@ -93,9 +93,9 @@ mvn clean install -Pnative
 Run
 
 ```shell script
-$ ./target/cloudevents-player-1.3-SNAPSHOT-runner -Dplayer.mode=LOCAL
+$ ./target/cloudevents-player-1.2-runner -Dplayer.mode=LOCAL
 ...
-2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) cloudevents-player 1.3-SNAPSHOT native (powered by Quarkus 2.16.1.Final) started in 0.022s. Listening on: http://0.0.0.0:8080
+2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) cloudevents-player 1.2 native (powered by Quarkus 2.16.1.Final) started in 0.022s. Listening on: http://0.0.0.0:8080
 2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) Profile prod activated. 
 2022-06-24 18:48:11,565 INFO  [io.quarkus] (main) Installed features: [cdi, hibernate-validator, kubernetes-client, rest-client-reactive, rest-client-reactive-jackson, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx, websockets, websockets-client]
 2022-06-24 18:48:17,028 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode LOCAL - broker: http://localhost:8080/
@@ -124,7 +124,7 @@ By default the application will try to send events to a [Knative Eventing broker
 See [Configuration Modes](#mode) for more details.
 
 ```{bash}
-./target/cloudevents-player-1.3-SNAPSHOT-runner
+./target/cloudevents-player-1.2-runner
 ```
 
 ### Using the Web UI
@@ -195,10 +195,10 @@ Cloudevents-player comes with 2 modes defined in the PLAYER_MODE environment var
 
 ```bash
 # Local Mode
-./target/cloudevents-player-1.3-SNAPSHOT-runner -Dplayer.mode=LOCAL
+./target/cloudevents-player-1.2-runner -Dplayer.mode=LOCAL
 
 # Knative Mode
-./target/cloudevents-player-1.3-SNAPSHOT-runner -Dplayer.mode=KNATIVE
+./target/cloudevents-player-1.2-runner -Dplayer.mode=KNATIVE
 ```
 
 ### Broker URI
@@ -207,7 +207,7 @@ Sets the broker URI where the messages will be sent to. It will always be `local
 Overrides the name and namespace properties.
 
 ```bash
-./target/cloudevents-player-1.3-SNAPSHOT-runner -Dbroker.uri=http://some-broker:1234
+./target/cloudevents-player-1.2-runner -Dbroker.uri=http://some-broker:1234
 ```
 
 ### Broker Name and Namespace
@@ -217,7 +217,18 @@ namespace will be the current namespace.
 
 ```bash
 # The broker URL
-./target/cloudevents-player-1.3-SNAPSHOT-runner -Dbroker.name=example -Dbroker.namespace=other
+./target/cloudevents-player-1.2-runner -Dbroker.name=example -Dbroker.namespace=other
 ...
 2022-06-24 19:08:53,681 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode KNATIVE - broker: http://broker-ingress.knative-eventing.svc.cluster.local/other/example
 ```
+
+## CORS
+
+By default the cloudevents player will allow all origins but it is possible to defined the allowed origins with the following environment variable:
+
+```
+  - name: QUARKUS_HTTP_CORS_ORIGINS
+    value: https://cloudevents-player-myns.apps.example.com
+```
+
+See the [Quarkus CORS documentation](https://quarkus.io/guides/http-reference#cors-filter) for more configuration parameters.
