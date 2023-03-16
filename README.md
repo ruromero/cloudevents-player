@@ -221,3 +221,14 @@ namespace will be the current namespace.
 ...
 2022-06-24 19:08:53,681 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode KNATIVE - broker: http://broker-ingress.knative-eventing.svc.cluster.local/other/example
 ```
+
+## CORS
+
+By default the cloudevents player will allow all origins but it is possible to defined the allowed origins with the following environment variable:
+
+```
+  - name: QUARKUS_HTTP_CORS_ORIGINS
+    value: https://cloudevents-player-myns.apps.example.com
+```
+
+See the [Quarkus CORS documentation](https://quarkus.io/guides/http-reference#cors-filter) for more configuration parameters.
