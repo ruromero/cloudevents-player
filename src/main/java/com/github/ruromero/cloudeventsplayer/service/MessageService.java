@@ -35,6 +35,7 @@ public class MessageService {
     private static final String DEFAULT_BROKER = "default";
     private static final int MAX_SIZE = 200;
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
+    private static final String KNATIVE_SINK_BINDING_ENV = "K_SINK";
 
     @ConfigProperty(name = "player.mode")
     Optional<PlayerMode> mode;
@@ -67,18 +68,33 @@ public class MessageService {
         PlayerMode playerMode = mode.orElse(PlayerMode.KNATIVE);
         LOGGER.info("Player mode {}", playerMode);
         if (PlayerMode.KNATIVE.equals(playerMode)) {
-            if (brokerUri.isPresent()) {
-                baseUri = URI.create(brokerUri.get());
-            } else if (kClient.getMasterUrl() != null) {
-                var namespace = brokerNamespace.orElse(kClient.getNamespace());
-                baseUri = UriBuilder.fromUri("http://broker-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(namespace, brokerName);
-            } else {
-                LOGGER.error("Unable to define the default namespace");
-                throw new IllegalStateException("Unable to define the default namespace. The Kubernetes Client cannot get the masterUrl");
-            }
+            baseUri = getKnativeBrokerUri();
         }
         brokerService = RestClientBuilder.newBuilder().baseUri(baseUri).build(BrokerService.class);
         LOGGER.info("Broker endpoint: {}", baseUri);
+    }
+
+    /*
+     * URI resolution has the following priorities
+     * 1. BROKER_URI environment variable
+     * 2. K_SINK environment variable injected after creating a SinkBinding
+     * 3. BROKER_NAME + BROKER_NAMESPACE. If BROKER_NAMESPACE is not set, it defaults to the client namespace
+     */
+    private URI getKnativeBrokerUri() {
+        if (brokerUri.isPresent()) {
+            return URI.create(brokerUri.get());
+        }
+        String knSinkBinding = System.getenv(KNATIVE_SINK_BINDING_ENV);
+        if (knSinkBinding != null) {
+            return URI.create(knSinkBinding);
+        } 
+        if (kClient.getMasterUrl() != null) {
+            var namespace = brokerNamespace.orElse(kClient.getNamespace());
+            return UriBuilder.fromUri("http://broker-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(namespace, brokerName);
+        }
+        
+        LOGGER.error("Unable to define the default namespace");
+        throw new IllegalStateException("Unable to define the default namespace. The Kubernetes Client cannot get the masterUrl");
     }
 
     public void send(CloudEvent event, boolean isStructured) {

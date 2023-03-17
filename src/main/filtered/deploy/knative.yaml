@@ -10,11 +10,6 @@ spec:
     spec:
       containers:
         - image: ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
-          env:
-            - name: PLAYER_MODE
-              value: KNATIVE
-            - name: BROKER_NAME
-              value: default
 ---
 apiVersion: eventing.knative.dev/v1
 kind: Trigger
@@ -23,9 +18,29 @@ metadata:
   annotations:
     knative-eventing-injection: enabled
 spec:
-  broker: default
+  broker: example-broker
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
       kind: Service
       name: cloudevents-player
+---
+apiVersion: sources.knative.dev/v1
+kind: SinkBinding
+metadata:
+  name: ce-player-binding
+spec:
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: example-broker
+  subject:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: cloudevents-player
+---
+apiVersion: eventing.knative.dev/v1
+kind: Broker
+metadata:
+  name: example-broker
