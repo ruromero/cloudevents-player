@@ -4,20 +4,26 @@
 [![amd64](https://img.shields.io/badge/container-amd64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
 [![arm64](https://img.shields.io/badge/container-arm64-blue)](https://quay.io/repository/ruben/cloudevents-player?tab=tags)
 
-* [Build](#build)
-  + [JVM Build](#jvm-build)
-  + [Quarkus dev mode](#quarkus-dev-mode)
-  + [Native build](#native-build)
-  + [Skip frontend build](#skip-frontend-build)
-  + [Build the container image](#build-the-container-image)
-* [Run the application](#run-the-application)
-* [Running CloudEvents Player on Kubernetes](#running-cloudevents-player-on-kubernetes)
-  + [Requirements](#requirements)
-  + [Deploy the application](#deploy-the-application)
-* [Configuration](#configuration)
-  + [Mode](#mode)
-  + [Broker URI](#broker-uri)
-  + [Broker Name and Namespace](#broker-name-and-namespace)
+- [Running the container image](#running-the-container-image)
+- [Running the binary](#running-the-binary)
+- [Running on Kubernetes](#running-on-kubernetes)
+  * [Requirements](#requirements)
+  * [Create the broker](#create-the-broker)
+  * [Create the Knative Service](#create-the-knative-service)
+  * [Bind the service with the broker](#bind-the-service-with-the-broker)
+  * [Create the Knative trigger](#create-the-knative-trigger)
+  * [Manual deployment](#manual-deployment)
+- [Build](#build)
+  * [JVM Build](#jvm-build)
+  * [Quarkus dev mode](#quarkus-dev-mode)
+  * [Native build](#native-build)
+  * [Skip frontend build](#skip-frontend-build)
+  * [Build the container image](#build-the-container-image)
+- [Configuration](#configuration)
+  * [Player Mode](#player-mode)
+  * [Broker URI](#broker-uri)
+  * [Broker Name and Namespace](#broker-name-and-namespace)
+  * [CORS](#cors)
 
 It is an application that can send and receive [CloudEvents](https://cloudevents.io/). Its purpose is to be deployed on a
 [Knative Eventing](https://knative.dev/docs/eventing/) environment so that users can monitor received events in the Activity section and
@@ -39,6 +45,145 @@ and one emitted event.
 And you will also be able to display the payload of the event.
 
 ![event](docs/images/event.png)
+
+## Running the container image
+
+You can expect to have built container images in `arm64` and `amd64` architectures in `quay.io/ruben/cloudevents-player:v1.3`
+
+_Podman_
+
+```bash
+podman run -p 8080:8080 -e PLAYER_MODE=LOCAL --rm quay.io/ruben/cloudevents-player:v1.3
+```
+
+_Docker_
+```bash
+docker run -p 8080:8080 -e PLAYER_MODE=LOCAL --rm quay.io/ruben/cloudevents-player:v1.3
+```
+
+## Running the binary
+
+First you will have to build the application. See the [Build](#build) section for more details. Then you can
+start the application locally with the following command.
+
+```bash
+PLAYER_MODE=LOCAL ./target/cloudevents-player-1.3-SNAPSHOT-runner
+```
+
+## Running on Kubernetes
+
+### Requirements
+
+- Knative serving
+- Knative eventing
+- `kubectl`
+- `kn`
+
+### Create the broker
+
+Let's use the `kn` CLI to create an InMemoryChannel-backed Broker.
+
+```bash
+$ kn broker create example-broker
+Broker 'example-broker' successfully created in namespace 'eventing-demo'.
+```
+
+Let's confirm the Broker is created and ready.
+
+```bash
+$ kn broker list                 
+NAME             URL                                                                                AGE   CONDITIONS   READY   REASON
+example-broker   http://broker-ingress.knative-eventing.svc.cluster.local/eventing-demo/example-broker   20s   6 OK / 6     True   
+```
+
+### Create the Knative Service
+
+If you have the `kn` cli available you can just create the broker with the CLI
+
+```bash
+$ kn service create cloudevents-player \
+--image quay.io/ruben/cloudevents-player:latest
+
+Creating service 'cloudevents-player' in namespace 'eventing-demo':
+
+  0.224s Configuration "cloudevents-player" is waiting for a Revision to become ready.
+  6.043s ...
+  6.044s Ingress has not yet been reconciled.
+  6.045s Waiting for load balancer to be ready
+  6.248s Ready to serve.
+
+Service 'cloudevents-player' created to latest revision 'cloudevents-player-00001' is available at URL:
+https://cloudevents-player-eventing-demo.apps.example.com
+```
+
+### Bind the service with the broker
+
+It is possible to connect the Cloudevents Player with the broker in different ways.
+
+1. Create a SinkBinding. This is the easiest one and works for any type of broker. It injects the `K_SINK` environment variable
+into the Knative Service. The service is rolled out and starts using it for sending events.
+
+```bash
+kn source binding create ce-player-binding --subject "Service:serving.knative.dev/v1:cloudevents-player" --sink broker:example-broker
+```
+
+2. Define the `BROKER_NAME` and `BROKER_NAMESPACE` environment variables to the Deployment, through the Service spec. The `BROKER_URI`
+is calculated from these values as `http://broker-ingress.knative-eventing.svc.cluster.local/{broker_namespace}/{broker_name}`. This
+option is only compatible with the In-Memory Broker.
+
+```bash
+## The BROKER_NAMESPACE env var is only required if the broker is in a different namespace
+
+kn service update --env BROKER_NAME=example-broker --env BROKER_NAMESPACE=other-ns cloudevents-player
+```
+
+3. Define the `BROKER_URI`. As a last resort you can manually define the `BROKER_URI` of the Broker. This will take precedence over any
+other variable.
+
+```bash
+kn service update --env BROKER_URI=http://other-ingress.other-ns.svc.cluster.local/foo/bar cloudevents-player
+```
+
+Try out the Service URL, you will be able to send events but your events will not be consumed by any
+service.
+
+```bash
+$ CLOUDEVENTS_URL=$(kn service describe cloudevents-player -o url)
+$ curl -vk $CLOUDEVENTS_URL \
+        -H "Content-Type: application/json" \
+        -H "Ce-Id: 123456789" \
+        -H "Ce-Specversion: 1.0" \
+        -H "Ce-Type: some-type" \
+        -H "Ce-Source: command-line" \
+        -d '{"msg":"Hello CloudEvents!"}'
+```
+
+### Create the Knative trigger
+
+In order for the Cloudevents Player to subscribe to events from the broker you need to create a `trigger`
+
+```bash
+kn trigger create cloudevents-trigger --sink cloudevents-player  --broker example-broker                                             
+```
+
+### Manual deployment
+
+As an alternative, you can deploy the application manually by using the [knative.yaml](deploy/knative.yaml) file
+
+```shell script
+$ kubectl apply -n myproject -f deploy/knative.yaml
+service.serving.knative.dev/cloudevents-player created
+trigger.eventing.knative.dev/cloudevents-player created
+sinkbinding.sources.knative.dev/ce-player-binding created
+broker.eventing.knative.dev/example-broker created
+```
+
+The following resources are created:
+
+* InMemory Broker: The Broker that will receive and forward the events
+* Knative Service: Pointing to the image and mounting the volume from the configMap
+* SinkBinding: Binding the Knative service to the Broker
+* Trigger: To subscribe to any message in the Broker
 
 ## Build
 
@@ -112,102 +257,63 @@ mvn clean package -PskipFrontend
 ### Build the container image
 
 ```shell script
-mvn package -Dcontainer
+mvn clean package -Dcontainer -Dquarkus.native.container-build=true
 ```
-
-## Run the application
-
-The application can be configured to send events to itself to ensure that both send/receive
-work well and send valid CloudEvents.
-
-By default the application will try to send events to a [Knative Eventing broker](https://knative.dev/docs/eventing/brokers/).
-See [Configuration Modes](#mode) for more details.
-
-```{bash}
-./target/cloudevents-player-1.3-SNAPSHOT-runner
-```
-
-### Using the Web UI
-
-You can send a message from Web UI by filling in the form and the activity will show the emitted and received
-events (from the loopback).
-
-### Using Curl
-
-You can also simulate the broker with `curl`:
-
-```shell script
-$ curl -v http://localhost:8080 \
-  -H "Content-Type: application/json" \
-  -H "Ce-Id: foo-1" \
-  -H "Ce-Specversion: 1.0" \
-  -H "Ce-Type: dev.example.events" \
-  -H "Ce-Source: curl-source" \
-  -d '{"msg":"Hello team!"}'
-
-> POST / HTTP/1.1
-> User-Agent: curl/7.35.0
-> Host: localhost:8080
-> Accept: */*
-> Ce-Id: foo-1
-> Ce-Specversion: 1.0
-> Ce-Type: dev.example.events
-> Ce-Source: curl-source
-> Content-Type: application/json
-> Content-Length: 21
->
-< HTTP/1.1 202 Accepted
-< Content-Length: 0
-< Date: Thu, 24 Oct 2019 08:27:06 GMT
-```
-
-## Running CloudEvents Player on Kubernetes
-
-### Requirements
-
-* Knative serving
-* Knative eventing
-
-### Deploy the application
-
-Use [knative.yaml](deploy/knative.yaml) to create the resources
-
-```shell script
-$ kubectl apply -n myproject -f deploy/knative.yaml
-service.serving.knative.dev/cloudevents-player created
-trigger.eventing.knative.dev/cloudevents-player created
-```
-
-The following resources are created:
-
-* Knative Service: Pointing to the image and mounting the volume from the configMap
-* Trigger: To subscribe to any message in the broker
 
 ## Configuration
 
-### Mode
+The Cloudevents Player can be configured by:
 
-Cloudevents-player comes with 2 modes defined in the PLAYER_MODE environment variable:
+ - System properties. Usually in lower case and separated by dots e.g. `player.mode` 
+ - Environment variables. In upper case and separated by underscores e.g. `PLAYER_MODE`
 
-- LOCAL: Received events are forwarded to the loopback broker. This mode is just for development and testing 
-- KNATIVE (default): The application will get the current namespace it is running in and will use the `BROKER_NAME`
+These are the configuration options provided in the Cloudevents Player.
+
+- `PLAYER_MODE`
+- `BROKER_URI`
+- `BROKER_NAME`
+- `BROKER_NAMESPACE`
+
+In the `KNATIVE` mode it will also look for the `K_SINK` environment variable injected after
+defining a `SinkBinding`.
+
+For more configuration options refer to the [Quarkus documentation](https://quarkus.io/guides/all-config)
+
+### Player Mode
+
+Cloudevents Player comes with 2 modes defined in the `PLAYER_MODE` environment variable:
+
+- `LOCAL`: Received events are forwarded to the loopback broker. This mode is just for development and testing 
+- `KNATIVE` (default): The application will get the current namespace it is running in and will use the `BROKER_NAME`
  environment variable to decide which broker to connect to (`default` is the default broker).
 
 ```bash
 # Local Mode
+# system property
 ./target/cloudevents-player-1.3-SNAPSHOT-runner -Dplayer.mode=LOCAL
 
+# environment variable
+PLAYER_MODE=LOCAL ./target/cloudevents-player-1.3-SNAPSHOT-runner
+
 # Knative Mode
+# system property
 ./target/cloudevents-player-1.3-SNAPSHOT-runner -Dplayer.mode=KNATIVE
+
+# environment variable
+PLAYER_MODE=KNATIVE ./target/cloudevents-player-1.3-SNAPSHOT-runner
 ```
 
 ### Broker URI
 
-Sets the broker URI where the messages will be sent to. It will always be `localhost:8080` for `LOCAL` mode.
+Sets the `BROKER_URI` where the messages will be sent to. It will always be `localhost:8080` for `LOCAL` mode.
 Overrides the name and namespace properties.
 
 ```bash
+# with a system property
 ./target/cloudevents-player-1.3-SNAPSHOT-runner -Dbroker.uri=http://some-broker:1234
+
+# or using an environment variable
+BROKER_URI=http://some-broker:1234 ./target/cloudevents-player-1.3-SNAPSHOT-runner
 ```
 
 ### Broker Name and Namespace
@@ -216,13 +322,18 @@ Define the broker name and namespace to guess the broker URI. The default broker
 namespace will be the current namespace.
 
 ```bash
-# The broker URL
+# system property
 ./target/cloudevents-player-1.3-SNAPSHOT-runner -Dbroker.name=example -Dbroker.namespace=other
+...
+2022-06-24 19:08:53,681 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode KNATIVE - broker: http://broker-ingress.knative-eventing.svc.cluster.local/other/example
+
+# environment variable
+BROKER_NAME=example BROKER_NAMESPACE=other ./target/cloudevents-player-1.3-SNAPSHOT-runner
 ...
 2022-06-24 19:08:53,681 INFO  [com.git.rur.clo.ser.MessageService] (ForkJoinPool.commonPool-worker-3) Player mode KNATIVE - broker: http://broker-ingress.knative-eventing.svc.cluster.local/other/example
 ```
 
-## CORS
+### CORS
 
 By default the cloudevents player will allow all origins but it is possible to defined the allowed origins with the following environment variable:
 
