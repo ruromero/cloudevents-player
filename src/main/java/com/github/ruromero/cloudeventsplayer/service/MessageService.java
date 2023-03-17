@@ -71,7 +71,7 @@ public class MessageService {
                 baseUri = URI.create(brokerUri.get());
             } else if (kClient.getMasterUrl() != null) {
                 var namespace = brokerNamespace.orElse(kClient.getNamespace());
-                baseUri = UriBuilder.fromUri("http://broker-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(namespace, brokerName);
+                baseUri = UriBuilder.fromUri("http://{broker}-ingress.knative-eventing.svc.cluster.local/{namespace}/{broker}").build(brokerName, namespace, brokerName); 
             } else {
                 LOGGER.error("Unable to define the default namespace");
                 throw new IllegalStateException("Unable to define the default namespace. The Kubernetes Client cannot get the masterUrl");
